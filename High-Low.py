@@ -1,7 +1,12 @@
 # coding=UTF-8
 # version alpha0.1
 import tkinter as tk
+import random
+import threading
+import time
 from functools import partial
+suits_list=['Red','Black',"Green"]
+cards_list=[1,2,3,4,5,6,7,8,9,'J','Q','K']
 
 class MainApp:
     def __init__(self, parent):
@@ -85,19 +90,9 @@ class MainApp:
                                      anchor=tk.W,
                                      bg="grey10",
                                      fg="white",
-                                     height=0, width=93,
-                                     padx=5, pady=10)
+                                     height=0, width=65,
+                                     padx=3, pady=10)
         self.title_label.grid(row=0)
-        
-        self.withdraw_button = tk.Button(self.topbar_frame,
-                                     text="Withdraw",
-                                     font="Arial 10 bold",
-                                     justify=tk.LEFT,
-                                     bg="grey10",
-                                     fg="white",
-                                     bd=0,
-                                     padx=10, pady=9)
-        self.withdraw_button.grid(row=0, column=1)
         
         self.help_button = tk.Button(self.topbar_frame,
                                      text="Help",
@@ -107,9 +102,39 @@ class MainApp:
                                      fg="white",
                                      bd=0,
                                      padx=10, pady=9)
-        self.help_button.grid(row=0, column=2) 
+        self.help_button.grid(row=0, column=1)
         
+        self.leaderboard_button = tk.Button(self.topbar_frame,
+                                     text="Leaderboard",
+                                     font="Arial 10 bold",
+                                     justify=tk.LEFT,
+                                     bg="grey10",
+                                     fg="white",
+                                     bd=0,
+                                     padx=10, pady=9)
+        self.leaderboard_button.grid(row=0, column=2)             
         
+        self.withdraw_button = tk.Button(self.topbar_frame,
+                                     text="Withdraw",
+                                     font="Arial 10 bold",
+                                     justify=tk.LEFT,
+                                     bg="grey10",
+                                     fg="white",
+                                     bd=0,
+                                     padx=10, pady=9)
+        self.withdraw_button.grid(row=0, column=3)
+        
+        self.coins_label = tk.Label(self.topbar_frame,
+                                     text="0 Coins",
+                                     font="Arial 10 bold",
+                                     justify=tk.LEFT,
+                                     bg="grey10",
+                                     fg="white",
+                                     height=0, width=14,
+                                     padx=0, pady=10)
+        self.coins_label.grid(row=0, column=4)      
+
+
         # frame to hold higher or lower buttons
         self.left_frame = tk.Frame(self.content_frame,
                                    bg="red",
@@ -127,22 +152,33 @@ class MainApp:
                                        bg=default_bg,
                                        text='▲',
                                        font=(font, '28'),
-                                       padx=6, pady=0)
+                                       padx=0, pady=0,
+                                       width=8, height=0)
         self.higher_button.grid(row=1, padx=0, pady=1)
         
+        self.entry_box = tk.Entry(self.left_frame,
+                                  width=12,
+                                  font=(font, '18', 'bold'),
+                                  justify=tk.CENTER,
+                                  bg="grey40",
+                                  fg="grey90",
+                                  borderwidth=0)
+        self.entry_box.grid(row=2, padx=0, pady=1)        
+        
         self.lower_button = tk.Button(self.left_frame,
-                                       bg=default_bg,
-                                       text='▼',
-                                       font=(font, '28'),
-                                       padx=6, pady=0)
-        self.lower_button.grid(row=2, padx=0, pady=1)        
+                                      bg=default_bg,
+                                      text='▼',
+                                      font=(font, '28'),
+                                      padx=0, pady=0,
+                                      width=8, height=0)
+        self.lower_button.grid(row=3, padx=0, pady=1)        
         
         self.lower_label = tk.Label(self.left_frame,
                                     bg=default_bg,
                                     text='X1',
                                     font=(font, '14'),
                                     padx=2, pady=2)
-        self.lower_label.grid(row=3)        
+        self.lower_label.grid(row=4)        
         
         
         # frame to hold cards
@@ -151,16 +187,33 @@ class MainApp:
                                      padx=2, pady=2)
         self.center_frame.grid(row=1, column=1)
         
+        self.info_label = tk.Label(self.center_frame,
+                                     text="Welcome!",
+                                     font="Arial 14",
+                                     justify=tk.LEFT,
+                                     bg=default_bg,
+                                     fg="white",
+                                     height=0, width=14,
+                                     padx=0, pady=10)
+        self.info_label.grid(row=0, column=0)        
+
         root.Cardbg = Cardbg = tk.PhotoImage(file='card.png')
         self.card = tk.Canvas(self.center_frame,
                               bg=default_bg,
                               highlightthickness=0,
-                              width=272, height=397)
+                              width=272, height=330)
         self.card.create_image(136, 0, image=Cardbg, anchor=tk.N)
         self.card.create_text(20, -10, text='A', font=(font, '72', 'bold'), anchor=tk.NW, justify=tk.CENTER)
         self.card.create_text(200, 280, text='B', font=(font, '72', 'bold'), anchor=tk.NW, justify=tk.CENTER)
-        self.card.grid(row=0, padx=2, pady=2)        
+        self.card.grid(row=1, padx=2, pady=2)        
         
+        self.history_button = tk.Button(self.center_frame,
+                                        bg=default_bg,
+                                        text='History and stats',
+                                        font=(font, '18'),
+                                        padx=0, pady=0,
+                                        width=20, height=0)
+        self.history_button.grid(row=2, column=0, padx=0, pady=5,)        
         
         # frame to hold other buttons 
         self.right_frame = tk.Frame(self.content_frame,
@@ -170,10 +223,11 @@ class MainApp:
         
         self.two_to_ten_button = tk.Button(self.right_frame,
                                        bg=default_bg,
-                                       text='2-10',
+                                       text='2-10 x1.44',
                                        font=(font, '18', "bold"),
                                        padx=0, pady=0,
-                                       width=10, height=0)
+                                       width=10, height=0,
+                                       command=lambda: self.bet(1.44))
         self.two_to_ten_button.grid(row=0, padx=0, pady=0)          
         
         self.RBG_button_frame = tk.Frame(self.right_frame,
@@ -183,31 +237,31 @@ class MainApp:
         
         self.R_button = tk.Button(self.RBG_button_frame,
                                        bg=default_bg,
-                                       text='R',
-                                       font=(font, '18', "bold"),
+                                       text='R x3',
+                                       font=(font, '17', "bold"),
                                        padx=0, pady=0,
                                        width=0, height=0)
-        self.R_button.grid(row=0, column=0, padx=2, pady=0)
+        self.R_button.grid(row=0, column=0, padx=0, pady=0)
         
-        self.R_button = tk.Button(self.RBG_button_frame,
+        self.B_button = tk.Button(self.RBG_button_frame,
                                        bg=default_bg,
-                                       text='B',
-                                       font=(font, '18', "bold"),
+                                       text='B x3',
+                                       font=(font, '17', "bold"),
                                        padx=0, pady=0,
                                        width=0, height=0)
-        self.R_button.grid(row=0, column=1, padx=2, pady=0)
+        self.B_button.grid(row=0, column=1, padx=0, pady=0)
         
         self.G_button = tk.Button(self.RBG_button_frame,
                                        bg=default_bg,
-                                       text='G',
-                                       font=(font, '18', "bold"),
+                                       text='G x3',
+                                       font=(font, '17', "bold"),
                                        padx=0, pady=0,
                                        width=0, height=0)
         self.G_button.grid(row=0, column=2, padx=2, pady=0)
         
         self.JQK_button = tk.Button(self.right_frame,
                                        bg=default_bg,
-                                       text='JQK',
+                                       text='J, Q, K',
                                        font=(font, '18', "bold"),
                                        padx=0, pady=0,
                                        width=10, height=0)
@@ -220,7 +274,7 @@ class MainApp:
         
         self.AK_button = tk.Button(self.ak_and_a_button_frame,
                                        bg=default_bg,
-                                       text='AK',
+                                       text='A, K',
                                        font=(font, '18', "bold"),
                                        padx=0, pady=0,
                                        width=4, height=0)
@@ -245,9 +299,15 @@ class MainApp:
         
         # Drag window if button down on title bar
         self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)
+        
+        self.minimise_button.bind("<Enter>", self.minimise_on_enter)
+        self.minimise_button.bind("<Leave>", self.minimise_on_leave)        
+        
+        self.close_button.bind("<Enter>", self.close_on_enter)
+        self.close_button.bind("<Leave>", self.close_on_leave)        
 
         # Show window when icon poressed in taskbar
-        self.Mainframe.bind("<Map>", self.Mapped)        
+        self.Mainframe.bind("<Map>", self.Mapped) 
         
     # Make window moveable
     def Main_pos(self, partner):
@@ -271,8 +331,65 @@ class MainApp:
         root.update_idletasks()
         root.overrideredirect(True)
         root.state('normal')
-
-
+        
+    def close_on_enter(self, partner):
+        self.close_button['background'] = 'red'
+        self.close_button['foreground'] = 'white'
+        
+    def close_on_leave(self, partner):
+        self.close_button['background'] = 'grey3'
+        self.close_button['foreground'] = 'white'
+        
+    def minimise_on_enter(self, partner):
+        self.minimise_button['background'] = 'grey40'
+        self.minimise_button['foreground'] = 'white'
+        
+    def minimise_on_leave(self, partner):
+        self.minimise_button['background'] = 'grey3'
+        self.minimise_button['foreground'] = 'white'
+    
+    def bet(self, multiplier):
+        def countdown():
+            self.info_label.configure(text="Drawing card...")
+            time.sleep(1)
+            self.info_label.configure(text=picked_card)
+            self.buttons_on(self)            
+        self.buttons_off(self)
+        inputvalue=self.entry_box.get()
+        if random.randint(1, 40)==40:
+            picked_card='Joker'
+        else:
+            card_suit=random.choice(suits_list)
+            card_numeral=random.choice(cards_list)
+            picked_card=str(card_numeral)+' '+str(card_suit)
+        print(picked_card)
+        countdown_thread = threading.Thread(target=countdown)
+        countdown_thread.start()        
+    
+    def buttons_off(self, partner):
+        self.higher_button['state']=tk.DISABLED
+        self.lower_button['state']=tk.DISABLED
+        self.two_to_ten_button['state']=tk.DISABLED
+        self.R_button['state']=tk.DISABLED
+        self.B_button['state']=tk.DISABLED
+        self.G_button['state']=tk.DISABLED
+        self.JQK_button['state']=tk.DISABLED
+        self.AK_button['state']=tk.DISABLED
+        self.A_button['state']=tk.DISABLED
+        self.Joker_button['state']=tk.DISABLED
+    
+    def buttons_on(self, partner):
+        self.higher_button['state']=tk.NORMAL
+        self.lower_button['state']=tk.NORMAL
+        self.two_to_ten_button['state']=tk.NORMAL
+        self.R_button['state']=tk.NORMAL
+        self.B_button['state']=tk.NORMAL
+        self.G_button['state']=tk.NORMAL
+        self.JQK_button['state']=tk.NORMAL
+        self.AK_button['state']=tk.NORMAL
+        self.A_button['state']=tk.NORMAL
+        self.Joker_button['state']=tk.NORMAL   
+        
 if __name__ == "__main__":
     root = tk.Tk()
     root.title('main')
