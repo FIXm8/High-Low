@@ -7,6 +7,8 @@ import time
 from functools import partial
 suits_list=['Red','Black',"Green"]
 cards_list=[1,2,3,4,5,6,7,8,9,'J','Q','K']
+coins=10000
+counter=0
 
 class MainApp:
     def __init__(self, parent):
@@ -189,11 +191,11 @@ class MainApp:
         
         self.info_label = tk.Label(self.center_frame,
                                      text="Welcome!",
-                                     font="Arial 14",
+                                     font="Arial 12 bold",
                                      justify=tk.LEFT,
                                      bg=default_bg,
                                      fg="white",
-                                     height=0, width=14,
+                                     height=0, width=25,
                                      padx=0, pady=10)
         self.info_label.grid(row=0, column=0)        
 
@@ -227,7 +229,7 @@ class MainApp:
                                        font=(font, '18', "bold"),
                                        padx=0, pady=0,
                                        width=10, height=0,
-                                       command=lambda: self.bet(1.44))
+                                       command=lambda: self.inputcheck(1.44))
         self.two_to_ten_button.grid(row=0, padx=0, pady=0)          
         
         self.RBG_button_frame = tk.Frame(self.right_frame,
@@ -348,14 +350,42 @@ class MainApp:
         self.minimise_button['background'] = 'grey3'
         self.minimise_button['foreground'] = 'white'
     
-    def bet(self, multiplier):
+    def inputcheck(self, multiplier):
+        valid_characters='1234567890.'
+        inputvalue=self.entry_box.get()
+        print(inputvalue)
+        print(coins)
+        if inputvalue=='':
+            self.info_label.configure(text="Enter an amount!")
+            self.buttons_on(self)
+        else:
+            if all(char in valid_characters for char in inputvalue):
+                if '.'in inputvalue:
+                    self.info_label.configure(text="No decimals!")
+                    self.buttons_on(self)
+                else:
+                    inputvalue = int(inputvalue)
+                    if inputvalue > coins:
+                        self.info_label.configure(text="Lack of funds!")
+                        self.buttons_on(self)
+                    elif inputvalue < 100:
+                        self.info_label.configure(text="Minimum bet is 100!")
+                        self.buttons_on(self)
+                    else:
+                        self.draw_card(self)
+            else:
+                self.info_label.configure(text="Whole numbers only!")
+                self.buttons_on(self)
+        
+    def draw_card(self, partner):
         def countdown():
             self.info_label.configure(text="Drawing card...")
             time.sleep(1)
             self.info_label.configure(text=picked_card)
-            self.buttons_on(self)            
-        self.buttons_off(self)
-        inputvalue=self.entry_box.get()
+            self.buttons_on(self)
+        global counter
+        counter+=1
+        self.buttons_off(self, full=False)
         if random.randint(1, 40)==40:
             picked_card='Joker'
         else:
@@ -364,9 +394,9 @@ class MainApp:
             picked_card=str(card_numeral)+' '+str(card_suit)
         print(picked_card)
         countdown_thread = threading.Thread(target=countdown)
-        countdown_thread.start()        
+        countdown_thread.start()
     
-    def buttons_off(self, partner):
+    def buttons_off(self, partner, full):
         self.higher_button['state']=tk.DISABLED
         self.lower_button['state']=tk.DISABLED
         self.two_to_ten_button['state']=tk.DISABLED
@@ -377,6 +407,11 @@ class MainApp:
         self.AK_button['state']=tk.DISABLED
         self.A_button['state']=tk.DISABLED
         self.Joker_button['state']=tk.DISABLED
+        if full==True:   
+            self.leaderboard_button['state']=tk.DISABLED
+            self.help_button['state']=tk.DISABLED
+            self.withdraw_button['state']=tk.DISABLED
+            self.history_button['state']=tk.DISABLED
     
     def buttons_on(self, partner):
         self.higher_button['state']=tk.NORMAL
@@ -388,7 +423,11 @@ class MainApp:
         self.JQK_button['state']=tk.NORMAL
         self.AK_button['state']=tk.NORMAL
         self.A_button['state']=tk.NORMAL
-        self.Joker_button['state']=tk.NORMAL   
+        self.Joker_button['state']=tk.NORMAL
+        self.leaderboard_button['state']=tk.NORMAL
+        self.help_button['state']=tk.NORMAL
+        self.withdraw_button['state']=tk.NORMAL
+        self.history_button['state']=tk.NORMAL
         
 if __name__ == "__main__":
     root = tk.Tk()
