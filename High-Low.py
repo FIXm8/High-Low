@@ -1,22 +1,27 @@
 # coding=UTF-8
-# version alpha0.1
+# version 0.5
+# importing needed modules
 import tkinter as tk
 import random
 import threading
 import time
 from functools import partial
+# lists and variables needed for program functionality
 suits_list=['Red','Black',"Green"]
-cards_list=[1,2,3,4,5,6,7,8,9,'J','Q','K']
+cards_list=['A',2,3,4,5,6,7,8,9,10,'J','Q','K']
+picked_card=''
+firsttime=True
 coins=10000
 counter=0
 
-class MainApp:
-    def __init__(self, parent):
+class MainApp:  #Main class for aplication which does most of the work
+    def __init__(self, parent): 
         default_bg='grey20'
-        
+        button_bg = 'grey10'
+        button_fg = 'grey90'
         font = 'Bahnschrift Light SemiCondensed'
         
-        self.Mainframe = tk.Frame(bg='grey50',
+        self.Mainframe = tk.Frame(bg='grey50',  #Frame holding all widgts (everything)
                                   padx=0, pady=0)
         self.Mainframe.grid()
         
@@ -29,7 +34,7 @@ class MainApp:
         
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version alpha0.1',
+                                               text='Hi-Low game version 0.5',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -72,19 +77,20 @@ class MainApp:
                                          command=self.minimise)
         self.minimise_button.grid(row=0, column=1)
 
-        # Content frame holding content
+        # Content frame holding game content
         self.content_frame = tk.Frame(self.Mainframe,
                                       bg=default_bg,
                                       padx=0, pady=0)
         self.content_frame.grid(row=1)
         
         
-        # Topbar frame
+        # Topbar frame which holds the buttons and options for the top bar
         self.topbar_frame = tk.Frame(self.content_frame,
                                    bg="grey80",
                                    padx=0, pady=0)
         self.topbar_frame.grid(row=0, column=0, columnspan=3)   
         
+        #  label showing title of the game
         self.title_label = tk.Label(self.topbar_frame,
                                      text="Hi-Low",
                                      font="Arial 10 italic",
@@ -92,10 +98,11 @@ class MainApp:
                                      anchor=tk.W,
                                      bg="grey10",
                                      fg="white",
-                                     height=0, width=65,
+                                     height=0, width=63,
                                      padx=3, pady=10)
         self.title_label.grid(row=0)
         
+        #  help button, Opens help dialouge with class Help
         self.help_button = tk.Button(self.topbar_frame,
                                      text="Help",
                                      font="Arial 10 bold",
@@ -106,6 +113,7 @@ class MainApp:
                                      padx=10, pady=9)
         self.help_button.grid(row=0, column=1)
         
+         #  leaderboard button, Opens the leaderboard with class Leaderboard
         self.leaderboard_button = tk.Button(self.topbar_frame,
                                      text="Leaderboard",
                                      font="Arial 10 bold",
@@ -114,8 +122,9 @@ class MainApp:
                                      fg="white",
                                      bd=0,
                                      padx=10, pady=9)
-        self.leaderboard_button.grid(row=0, column=2)             
+        self.leaderboard_button.grid(row=0, column=2)
         
+        #  withdraw button, Opens the leaderboard with class withdraw       
         self.withdraw_button = tk.Button(self.topbar_frame,
                                      text="Withdraw",
                                      font="Arial 10 bold",
@@ -126,61 +135,81 @@ class MainApp:
                                      padx=10, pady=9)
         self.withdraw_button.grid(row=0, column=3)
         
+        #  shows the user the amount of coins they have
         self.coins_label = tk.Label(self.topbar_frame,
-                                     text="0 Coins",
+                                     text=str(coins)+" coins",
                                      font="Arial 10 bold",
                                      justify=tk.LEFT,
                                      bg="grey10",
                                      fg="white",
-                                     height=0, width=14,
+                                     height=0, width=16,
                                      padx=0, pady=10)
         self.coins_label.grid(row=0, column=4)      
 
-
         # frame to hold higher or lower buttons
         self.left_frame = tk.Frame(self.content_frame,
-                                   bg="red",
+                                   bg=default_bg,
                                    padx=2, pady=2)
         self.left_frame.grid(row=1, column=0)
         
+        #  shows user information
+        self.info_label = tk.Label(self.left_frame,
+                                     text='Welcome!',
+                                     font='Arial 12 bold',
+                                     justify=tk.LEFT,
+                                     bg=default_bg,
+                                     fg='white',
+                                     height=0, width=25,
+                                     padx=0, pady=10)
+        self.info_label.grid(row=0, column=0)        
+        
+        #  shows the multiplyer for betting for a higher number
         self.higher_label = tk.Label(self.left_frame,
                                      bg=default_bg,
                                      text='X10',
                                      font=(font, '14'),                                
                                      padx=2, pady=2)
-        self.higher_label.grid(row=0)
-        
+        self.higher_label.grid(row=1)
+        #  bet higher button
         self.higher_button = tk.Button(self.left_frame,
-                                       bg=default_bg,
+                                       bg=button_bg,
+                                       fg=button_fg,
                                        text='▲',
                                        font=(font, '28'),
+                                       borderwidth=0,
                                        padx=0, pady=0,
-                                       width=8, height=0)
-        self.higher_button.grid(row=1, padx=0, pady=1)
-        
+                                       width=14, height=0,
+                                       command = lambda: self.inputcheck(0, 'Higher')) 
+        self.higher_button.grid(row=2, padx=0, pady=1)
+        #  user entes amount of coins here to bet
         self.entry_box = tk.Entry(self.left_frame,
-                                  width=12,
                                   font=(font, '18', 'bold'),
                                   justify=tk.CENTER,
                                   bg="grey40",
                                   fg="grey90",
-                                  borderwidth=0)
-        self.entry_box.grid(row=2, padx=0, pady=1)        
+                                  borderwidth=0,
+                                  width=19)
+        self.entry_box.grid(row=3, padx=0, pady=5)        
         
+        #  bet lower button
         self.lower_button = tk.Button(self.left_frame,
-                                      bg=default_bg,
+                                      bg=button_bg,
+                                      fg=button_fg,
                                       text='▼',
                                       font=(font, '28'),
+                                      borderwidth=0,
                                       padx=0, pady=0,
-                                      width=8, height=0)
-        self.lower_button.grid(row=3, padx=0, pady=1)        
+                                      width=14, height=0,
+                                      command = lambda: self.inputcheck(0, 'lower')) 
+        self.lower_button.grid(row=4, padx=0, pady=1)
         
+        #  shows the multiplyer for betting for a lower number
         self.lower_label = tk.Label(self.left_frame,
                                     bg=default_bg,
                                     text='X1',
                                     font=(font, '14'),
                                     padx=2, pady=2)
-        self.lower_label.grid(row=4)        
+        self.lower_label.grid(row=5)        
         
         
         # frame to hold cards
@@ -189,26 +218,32 @@ class MainApp:
                                      padx=2, pady=2)
         self.center_frame.grid(row=1, column=1)
         
-        self.info_label = tk.Label(self.center_frame,
-                                     text="Welcome!",
-                                     font="Arial 12 bold",
+        #  shows information to the user such as errors and which card is drawn
+        self.card_label = tk.Label(self.center_frame,
+                                     text='',
+                                     font='Arial 12 bold',
                                      justify=tk.LEFT,
                                      bg=default_bg,
-                                     fg="white",
+                                     fg='white',
                                      height=0, width=25,
                                      padx=0, pady=10)
-        self.info_label.grid(row=0, column=0)        
-
-        root.Cardbg = Cardbg = tk.PhotoImage(file='card.png')
+        self.card_label.grid(row=0, column=0)
+        
+        # loads random card and shows it onto the frame
+        self.random_card()
+        
+        cardback='Images/Back.png'
+        root.Back = Back= tk.PhotoImage(file=cardback)
         self.card = tk.Canvas(self.center_frame,
                               bg=default_bg,
                               highlightthickness=0,
-                              width=272, height=330)
-        self.card.create_image(136, 0, image=Cardbg, anchor=tk.N)
-        self.card.create_text(20, -10, text='A', font=(font, '72', 'bold'), anchor=tk.NW, justify=tk.CENTER)
-        self.card.create_text(200, 280, text='B', font=(font, '72', 'bold'), anchor=tk.NW, justify=tk.CENTER)
+                              width=242, height=336)
+        self.card.create_image(121, 0, image=Cardbg, anchor=tk.N)
+        self.card.create_image(121, 0, image=Cardfg, anchor=tk.N)
+        self.card.create_image(121, -336, image=Back, anchor=tk.N)
         self.card.grid(row=1, padx=2, pady=2)        
         
+        #  history button that shows the history using class History
         self.history_button = tk.Button(self.center_frame,
                                         bg=default_bg,
                                         text='History and stats',
@@ -219,83 +254,116 @@ class MainApp:
         
         # frame to hold other buttons 
         self.right_frame = tk.Frame(self.content_frame,
-                                       bg="blue",
+                                       bg=default_bg,
                                        padx=2, pady=2)
         self.right_frame.grid(row=1, column=2)        
         
+        #  bet between 2-10
         self.two_to_ten_button = tk.Button(self.right_frame,
-                                       bg=default_bg,
-                                       text='2-10 x1.44',
+                                       bg=button_bg,
+                                       fg=button_fg,
+                                       text='2-10   x1.44',
                                        font=(font, '18', "bold"),
-                                       padx=0, pady=0,
-                                       width=10, height=0,
-                                       command=lambda: self.inputcheck(1.44))
+                                       borderwidth=0,
+                                       padx=5, pady=0,
+                                       width=20, height=0,
+                                       command=lambda: self.inputcheck(1.44, '2,3,4,5,6,7,8,9,10'))
         self.two_to_ten_button.grid(row=0, padx=0, pady=0)          
         
+        #  frame holding  R B G bet buttons
         self.RBG_button_frame = tk.Frame(self.right_frame,
-                                         bg="pink",
-                                         padx=2, pady=2)
+                                         bg=default_bg,
+                                         padx=0, pady=2)
         self.RBG_button_frame.grid(row=1, column=0)     
         
+        #  bet Red
         self.R_button = tk.Button(self.RBG_button_frame,
-                                       bg=default_bg,
-                                       text='R x3',
-                                       font=(font, '17', "bold"),
-                                       padx=0, pady=0,
-                                       width=0, height=0)
+                                       bg='red3',
+                                       fg=button_fg,
+                                       text='Red  x3',
+                                       font=(font, '14', "bold"),
+                                       borderwidth=0,
+                                       padx=0, pady=5,
+                                       width=8, height=1,
+                                       command=lambda: self.inputcheck(3, 'Red'))
         self.R_button.grid(row=0, column=0, padx=0, pady=0)
         
+        # bet Black
         self.B_button = tk.Button(self.RBG_button_frame,
-                                       bg=default_bg,
-                                       text='B x3',
-                                       font=(font, '17', "bold"),
-                                       padx=0, pady=0,
-                                       width=0, height=0)
-        self.B_button.grid(row=0, column=1, padx=0, pady=0)
+                                       bg='grey2',
+                                       fg=button_fg,
+                                       text='Black  x3',
+                                       font=(font, '14', "bold"),
+                                       borderwidth=0,
+                                       padx=0, pady=5,
+                                       width=8, height=1,
+                                       command=lambda: self.inputcheck(3, 'Black'))
+        self.B_button.grid(row=0, column=1, padx=1, pady=0)
         
+        #  bet Green
         self.G_button = tk.Button(self.RBG_button_frame,
-                                       bg=default_bg,
-                                       text='G x3',
-                                       font=(font, '17', "bold"),
-                                       padx=0, pady=0,
-                                       width=0, height=0)
-        self.G_button.grid(row=0, column=2, padx=2, pady=0)
+                                       bg='darkgreen',
+                                       fg=button_fg,
+                                       text='Green  x3',
+                                       font=(font, '14', "bold"),
+                                       borderwidth=0,
+                                       padx=0, pady=5,
+                                       width=8, height=1,
+                                       command=lambda: self.inputcheck(3, 'Green'))
+        self.G_button.grid(row=0, column=2, padx=0, pady=0)
         
+        #  bet J, Q or K
         self.JQK_button = tk.Button(self.right_frame,
-                                       bg=default_bg,
-                                       text='J, Q, K',
+                                       bg=button_bg,
+                                       fg=button_fg,
+                                       text='J, Q, K   x4.33',
                                        font=(font, '18', "bold"),
-                                       padx=0, pady=0,
-                                       width=10, height=0)
+                                       borderwidth=0,
+                                       padx=5, pady=0,
+                                       width=20, height=0,
+                                       command=lambda: self.inputcheck(3, 'J,Q,K'))
         self.JQK_button.grid(row=3, padx=0, pady=0)
         
+        #  ak and a bet buttons frame
         self.ak_and_a_button_frame = tk.Frame(self.right_frame,
-                                         bg="orange",
+                                         bg=default_bg,
                                          padx=2, pady=2)
         self.ak_and_a_button_frame.grid(row=4, column=0)
         
+        #  bet A or K
         self.AK_button = tk.Button(self.ak_and_a_button_frame,
-                                       bg=default_bg,
-                                       text='A, K',
+                                       bg=button_bg,
+                                       fg=button_fg,
+                                       text='A, K   x6.5',
                                        font=(font, '18', "bold"),
-                                       padx=0, pady=0,
-                                       width=4, height=0)
-        self.AK_button.grid(row=0, column=0, padx=2, pady=0)
+                                       borderwidth=0,
+                                       padx=1, pady=0,
+                                       width=10, height=0,
+                                       command=lambda: self.inputcheck(3, 'A,K'))
+        self.AK_button.grid(row=0, column=0, padx=1, pady=0)
         
+        #  bet A
         self.A_button = tk.Button(self.ak_and_a_button_frame,
-                                       bg=default_bg,
-                                       text='A',
+                                       bg=button_bg,
+                                       fg=button_fg,
+                                       text='A   x13',
                                        font=(font, '18', "bold"),
-                                       padx=0, pady=0,
-                                       width=4, height=0)
-        self.A_button.grid(row=0, column=1, padx=2, pady=0)
+                                       borderwidth=0,
+                                       padx=1, pady=0,
+                                       width=10, height=0,
+                                       command=lambda: self.inputcheck(3, 'A'))
+        self.A_button.grid(row=0, column=1, padx=1, pady=0)
         
+        #  bet Joker
         self.Joker_button = tk.Button(self.right_frame,
-                                       bg=default_bg,
-                                       text='JOKER',
+                                       bg='purple',
+                                       fg=button_fg,
+                                       text='JOKER   x39',
                                        font=(font, '18', "bold"),
-                                       padx=0, pady=0,
-                                       width=10, height=0)
+                                       borderwidth=0,
+                                       padx=5, pady=0,
+                                       width=20, height=0,
+                                       command=lambda: self.inputcheck(39, 'Joker'))
         self.Joker_button.grid(row=5, padx=0, pady=0)        
         
         
@@ -350,7 +418,29 @@ class MainApp:
         self.minimise_button['background'] = 'grey3'
         self.minimise_button['foreground'] = 'white'
     
-    def inputcheck(self, multiplier):
+    def random_card(self):
+        global Cardbg
+        global Cardfg
+        global randomfg
+        global randombg
+        global firsttime
+        if random.randint(1, 40)==1:
+            randombg='Joker.png'
+            randomfg='Joker.png'
+        else:
+            randombg=str(random.choice(suits_list))+'.png'
+            randomfg=str(random.choice(cards_list))+'.png'
+        root.Cardbg = Cardbg = tk.PhotoImage(file='Images/'+randombg)
+        root.Cardfg = Cardfg = tk.PhotoImage(file='Images/'+randomfg)        
+        if firsttime==True:
+            if randomfg=='Joker.png':
+                picked_card = 'Joker!'
+            else:
+                picked_card = str(randomfg[:-4]) + ' ' + str(randombg[:-4])            
+            self.card_label.configure(text=picked_card)
+            firsttime=False
+
+    def inputcheck(self, multiplier, button):
         valid_characters='1234567890.'
         inputvalue=self.entry_box.get()
         print(inputvalue)
@@ -372,29 +462,50 @@ class MainApp:
                         self.info_label.configure(text="Minimum bet is 100!")
                         self.buttons_on(self)
                     else:
-                        self.draw_card(self)
+                        self.Bet(self, multiplier, button)
             else:
                 self.info_label.configure(text="Whole numbers only!")
                 self.buttons_on(self)
         
-    def draw_card(self, partner):
-        def countdown():
-            self.info_label.configure(text="Drawing card...")
-            time.sleep(1)
-            self.info_label.configure(text=picked_card)
-            self.buttons_on(self)
+    def Bet(self, partner, multipier, button):
         global counter
+        global randomfg
+        global randombg
+        def countdown():
+            self.card.delete("all")
+            self.card.create_image(121, 0, image=Oldbg, anchor=tk.N)
+            self.card.create_image(121, 0, image=Oldfg, anchor=tk.N) 
+            if randomfg=='Joker.png':
+                picked_card = 'Joker!'
+            else:
+                picked_card = str(randomfg[:-4]) + ' ' + str(randombg[:-4])            
+            self.card_label.configure(text="Drawing card...")
+            time.sleep(1)
+            self.card_label.configure(text=picked_card)
+            self.card.delete("all")
+            self.card.create_image(121, 0, image=Cardbg, anchor=tk.N)
+            self.card.create_image(121, 0, image=Cardfg, anchor=tk.N)
+            self.buttons_on(self)
+        def animate():
+            time.sleep(0.01)
+            self.card.create_image(121, -300, image=root.Back, anchor=tk.N)
+            for i in range(0, 348, 12):
+                time.sleep(0.01)
+                i=-336+i
+                print(i)
+                self.card.create_image(121, i, image=root.Back, anchor=tk.N)
+            print(self.card.find_all())
         counter+=1
+        self.info_label.configure(text='Welcome!')
         self.buttons_off(self, full=False)
-        if random.randint(1, 40)==40:
-            picked_card='Joker'
-        else:
-            card_suit=random.choice(suits_list)
-            card_numeral=random.choice(cards_list)
-            picked_card=str(card_numeral)+' '+str(card_suit)
-        print(picked_card)
+        Oldbg, Oldfg = Cardbg, Cardfg
+        self.random_card()
         countdown_thread = threading.Thread(target=countdown)
         countdown_thread.start()
+        animate_thread = threading.Thread(target=animate)
+        animate_thread.start()             
+             
+        
     
     def buttons_off(self, partner, full):
         self.higher_button['state']=tk.DISABLED
