@@ -1,5 +1,5 @@
 # coding=UTF-8
-# version 0.5
+# version 0.7
 # importing needed modules
 import tkinter as tk
 import random
@@ -35,7 +35,7 @@ class MainApp:  #Main class for aplication which does most of the work
         
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.5',
+                                               text='Hi-Low game version 0.7',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -47,21 +47,6 @@ class MainApp:  #Main class for aplication which does most of the work
                                                height=0, width=141,
                                                padx=0, pady=0)
         self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
-
-        # Close button
-        self.close_button = tk.Button(self.title_bar_frame,
-                                      text="X",
-                                      font=(font, '9', 'bold'),
-                                      justify=tk.LEFT,
-                                      bg="grey3",
-                                      fg="White",
-                                      activebackground="Red",
-                                      activeforeground="White",
-                                      borderwidth=0,
-                                      height=0, width=3,
-                                      padx=0, pady=0,
-                                      command=root.destroy)
-        self.close_button.grid(row=0, column=2)
 
         # Minimise button
         self.minimise_button = tk.Button(self.title_bar_frame,
@@ -77,6 +62,21 @@ class MainApp:  #Main class for aplication which does most of the work
                                          padx=0, pady=0,
                                          command=self.minimise)
         self.minimise_button.grid(row=0, column=1)
+
+        # Close button
+        self.close_button = tk.Button(self.title_bar_frame,
+                                      text="X",
+                                      font=(font, '9', 'bold'),
+                                      justify=tk.LEFT,
+                                      bg="grey3",
+                                      fg="White",
+                                      activebackground="Red",
+                                      activeforeground="White",
+                                      borderwidth=0,
+                                      height=0, width=3,
+                                      padx=0, pady=0,
+                                      command=root.destroy)
+        self.close_button.grid(row=0, column=2)
 
         # Content frame holding game content
         self.content_frame = tk.Frame(self.Mainframe,
@@ -111,7 +111,8 @@ class MainApp:  #Main class for aplication which does most of the work
                                      bg="grey10",
                                      fg="white",
                                      bd=0,
-                                     padx=10, pady=9)
+                                     padx=10, pady=9,
+                                     command = lambda: self.get_help())
         self.help_button.grid(row=0, column=1)
         
          #  leaderboard button, Opens the leaderboard with class Leaderboard
@@ -122,7 +123,8 @@ class MainApp:  #Main class for aplication which does most of the work
                                      bg="grey10",
                                      fg="white",
                                      bd=0,
-                                     padx=10, pady=9)
+                                     padx=10, pady=9,
+                                     command = lambda: self.get_leaderboard())
         self.leaderboard_button.grid(row=0, column=2)
         
         #  withdraw button, Opens the leaderboard with class withdraw       
@@ -133,7 +135,8 @@ class MainApp:  #Main class for aplication which does most of the work
                                      bg="grey10",
                                      fg="white",
                                      bd=0,
-                                     padx=10, pady=9)
+                                     padx=10, pady=9,
+                                     command = lambda: self.get_withdraw())
         self.withdraw_button.grid(row=0, column=3)
         
         #  shows the user the amount of coins they have
@@ -151,7 +154,7 @@ class MainApp:  #Main class for aplication which does most of the work
         self.left_frame = tk.Frame(self.content_frame,
                                    bg=default_bg,
                                    padx=2, pady=2)
-        self.left_frame.grid(row=1, column=0)
+        self.left_frame.grid(row=1, column=0, padx=0, pady=20)
         
         #  shows user information
         self.info_label = tk.Label(self.left_frame,
@@ -161,12 +164,13 @@ class MainApp:  #Main class for aplication which does most of the work
                                      bg=default_bg,
                                      fg='white',
                                      height=0, width=25,
-                                     padx=0, pady=10)
+                                     padx=0, pady=2)
         self.info_label.grid(row=0, column=0)        
         
         #  shows the multiplyer for betting for a higher number
         self.higher_label = tk.Label(self.left_frame,
                                      bg=default_bg,
+                                     fg=button_fg,
                                      text='X10',
                                      font=(font, '14'),                                
                                      padx=2, pady=2)
@@ -333,28 +337,30 @@ class MainApp:  #Main class for aplication which does most of the work
         #  shows the multiplyer for betting for a lower number
         self.lower_label = tk.Label(self.left_frame,
                                     bg=default_bg,
+                                    fg=button_fg,
                                     text='X1',
                                     font=(font, '14'),
                                     padx=2, pady=2)
-        self.lower_label.grid(row=6)        
+        self.lower_label.grid(row=6)
+        
+        #  history button that shows the history using class History
+        self.history_button = tk.Button(self.left_frame,
+                                        bg=button_bg,
+                                        fg=button_fg,
+                                        text='History',
+                                        font=(font, '13', "bold"),
+                                        borderwidth=0,
+                                        padx=4, pady=0,
+                                        width=27, height=0,
+                                        command = lambda: self.get_history())
+        self.history_button.grid(row=7, column=0, padx=0, pady=2)            
         
         
         # frame to hold cards
         self.center_frame = tk.Frame(self.content_frame,
                                      bg=default_bg,
                                      padx=2, pady=2)
-        self.center_frame.grid(row=1, column=1)
-        
-        #  shows information to the user such as errors and which card is drawn
-        self.card_label = tk.Label(self.center_frame,
-                                     text='',
-                                     font='Arial 12 bold',
-                                     justify=tk.LEFT,
-                                     bg=default_bg,
-                                     fg='white',
-                                     height=0, width=25,
-                                     padx=0, pady=10)
-        self.card_label.grid(row=0, column=0)
+        self.center_frame.grid(row=1, column=1, padx=0, pady=20)
         
         #  loads random card and shows it on screen
         self.random_card()
@@ -368,22 +374,26 @@ class MainApp:  #Main class for aplication which does most of the work
         self.card.create_image(121, 0, image=Cardbg, anchor=tk.N)
         self.card.create_image(121, 0, image=Cardfg, anchor=tk.N)
         self.card.create_image(121, -336, image=Back, anchor=tk.N)
-        self.card.grid(row=1, padx=2, pady=2)        
-        
-        #  history button that shows the history using class History
-        self.history_button = tk.Button(self.center_frame,
-                                        bg=default_bg,
-                                        text='History and stats',
-                                        font=(font, '18'),
-                                        padx=0, pady=0,
-                                        width=20, height=0)
-        self.history_button.grid(row=2, column=0, padx=0, pady=5,)        
+        self.card.grid(row=1, padx=2, pady=10)    
         
         # frame to hold other buttons 
         self.right_frame = tk.Frame(self.content_frame,
                                        bg=default_bg,
                                        padx=2, pady=2)
-        self.right_frame.grid(row=1, column=2)        
+        self.right_frame.grid(row=1, column=2, padx=0, pady=20)       
+        
+        #  shows information to the user such as errors and which card is drawn
+        self.card_label = tk.Label(self.right_frame,
+                                   text='',
+                                   font='Arial 12 bold',
+                                   justify=tk.LEFT,
+                                   bg=default_bg,
+                                   fg='white',
+                                   height=0, width=25,
+                                   padx=0, pady=10)
+        self.card_label.grid(row=0, column=0)
+        
+        self.card_label.configure(text=card_label_set)
         
         #  bet between 2-10
         self.two_to_ten_button = tk.Button(self.right_frame,
@@ -395,13 +405,13 @@ class MainApp:  #Main class for aplication which does most of the work
                                        padx=5, pady=0,
                                        width=20, height=0,
                                        command=lambda: self.inputcheck(1.44, '2,3,4,5,6,7,8,9,10'))
-        self.two_to_ten_button.grid(row=0, padx=0, pady=0)          
+        self.two_to_ten_button.grid(row=1, padx=0, pady=0)          
         
         #  frame holding  R B G bet buttons
         self.RBG_button_frame = tk.Frame(self.right_frame,
                                          bg=default_bg,
                                          padx=0, pady=2)
-        self.RBG_button_frame.grid(row=1, column=0)     
+        self.RBG_button_frame.grid(row=2, column=0)     
         
         #  bet Red
         self.R_button = tk.Button(self.RBG_button_frame,
@@ -504,9 +514,23 @@ class MainApp:  #Main class for aplication which does most of the work
         self.close_button.bind("<Leave>", self.close_on_leave)        
 
         # Show window when icon poressed in taskbar
-        self.Mainframe.bind("<Map>", self.Mapped)        
+        self.Mainframe.bind("<Map>", self.Mapped)
+        
+        call_popup = Popup(self)
     
     # Make window moveable
+    def get_help(self):
+        call_help=Help(self)
+        
+    def get_leaderboard(self):
+        call_leaderboard=Leaderboard(self)
+        
+    def get_withdraw(self):
+        call_withdraw=Withdraw(self)
+        
+    def get_history(self):
+        call_history=History(self)       
+        
     def Main_pos(self, partner):
         windowx, windowy = root.winfo_rootx(), root.winfo_rooty()
         pointerx, pointery = root.winfo_pointerx(), root.winfo_pointery()
@@ -584,6 +608,7 @@ class MainApp:  #Main class for aplication which does most of the work
         global randomfg
         global randombg
         global firsttime
+        global card_label_set
         if random.randint(1, 40)==1:
             randombg='Joker.png'
             randomfg='Joker.png'
@@ -597,7 +622,7 @@ class MainApp:  #Main class for aplication which does most of the work
                 picked_card = 'Joker!'
             else:
                 picked_card = str(randomfg[:-4]) + ' ' + str(randombg[:-4])            
-            self.card_label.configure(text=picked_card)
+            card_label_set=text=picked_card
             self.configure_higher_lower()
             firsttime=False
     
@@ -751,12 +776,427 @@ class MainApp:  #Main class for aplication which does most of the work
         self.withdraw_button['state']=tk.NORMAL
         self.history_button['state']=tk.NORMAL
         
+class Help:
+    def __init__(self, partner):
+        default_bg='grey20'
+        button_bg = 'grey10'
+        button_fg = 'grey90'
+        font = 'Bahnschrift Light SemiCondensed'
+        self.helptoplevel = tk.Toplevel()
+        self.helptoplevel.overrideredirect(True)
+        self.helptoplevel.attributes('-alpha', 0.99)
+        self.helptoplevel.attributes("-topmost", 1)        
+        hwidth,hheight = 400, 200
+        self.helptoplevel.geometry('{}x{}+{}+{}'.format(hwidth,hheight,int(screen_width/2-hwidth/2),
+                                                   int(screen_height/2-hheight/2)))    
+        self.helptoplevel.attributes('-alpha', 0.99)
+        
+        partner.help_button.config(state=tk.DISABLED)
+        
+        # Title bar frame
+        self.title_bar_frame = tk.Frame(self.helptoplevel,
+                                        bg=default_bg,
+                                        padx=0, pady=0)
+        self.title_bar_frame.grid()        
+        
+        # Title bar drag button
+        self.title_bar_drag_button = tk.Button(self.title_bar_frame,
+                                               text='Hi-Low game version 0.7 Help',
+                                               font=(font, '9'),
+                                               bg="grey5",
+                                               fg="white",
+                                               anchor=tk.W,
+                                               relief=tk.SUNKEN,
+                                               activebackground="grey5",
+                                               activeforeground="white",
+                                               borderwidth=0,
+                                               height=0, width=62,
+                                               padx=0, pady=0)
+        self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
+
+        # Close button
+        self.close_button = tk.Button(self.title_bar_frame,
+                                      text="X",
+                                      font=(font, '9', 'bold'),
+                                      justify=tk.LEFT,
+                                      bg="grey3",
+                                      fg="White",
+                                      activebackground="Red",
+                                      activeforeground="White",
+                                      borderwidth=0,
+                                      height=0, width=3,
+                                      padx=0, pady=0,
+                                      command=partial(self.close_help, partner))
+        self.close_button.grid(row=0, column=1)
+        
+        self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)  
+        
+        self.close_button.bind("<Enter>", self.close_on_enter)
+        self.close_button.bind("<Leave>", self.close_on_leave)            
+    
+    # These defnintions change the colour of the minimise and close button when the mouse hovers over them
+    def close_on_enter(self, partner):
+        self.close_button['background'] = 'red'
+        self.close_button['foreground'] = 'white'
+        
+    def close_on_leave(self, partner):
+        self.close_button['background'] = 'grey3'
+        self.close_button['foreground'] = 'white'
+        
+    #  Close help menue
+    def close_help(self, partner):
+        # Put help button back to normal
+        partner.help_button.config(state=tk.NORMAL)
+        self.helptoplevel.destroy()           
+    
+    def Main_pos(self, partner):
+        helproot=self.helptoplevel
+        windowx, windowy = helproot.winfo_rootx(), helproot.winfo_rooty()
+        pointerx, pointery = helproot.winfo_pointerx(), helproot.winfo_pointery()
+        newx, newy = (pointerx-windowx), (pointery-windowy)
+
+        def move_window(self):
+            newpointx, newpointy = helproot.winfo_pointerx(), helproot.winfo_pointery()
+            helproot.geometry('{}x{}+{}+{}'.format(400,200,newpointx-newx,
+                                                            newpointy-newy))
+        self.title_bar_drag_button.bind('<B1-Motion>', move_window)
+    
+class Leaderboard:
+    def __init__(self, partner):
+        default_bg='grey20'
+        button_bg = 'grey10'
+        button_fg = 'grey90'
+        font = 'Bahnschrift Light SemiCondensed'
+        self.leaderboardtoplevel = tk.Toplevel()
+        self.leaderboardtoplevel.overrideredirect(True)
+        self.leaderboardtoplevel.attributes('-alpha', 0.99)
+        self.leaderboardtoplevel.attributes("-topmost", 1)        
+        wwidth,wheight = 450, 450
+        self.leaderboardtoplevel.geometry('{}x{}+{}+{}'.format(wwidth,wheight,int(screen_width/2-wwidth/2),
+                                                   int(screen_height/2-wheight/2)))    
+        self.leaderboardtoplevel.attributes('-alpha', 0.99)
+        
+        partner.leaderboard_button.config(state=tk.DISABLED)
+        
+        # Title bar frame
+        self.title_bar_frame = tk.Frame(self.leaderboardtoplevel,
+                                        bg=default_bg,
+                                        padx=0, pady=0)
+        self.title_bar_frame.grid()        
+        
+        # Title bar drag button
+        self.title_bar_drag_button = tk.Button(self.title_bar_frame,
+                                               text='Hi-Low game version 0.7 Leaderboard',
+                                               font=(font, '9'),
+                                               bg="grey5",
+                                               fg="white",
+                                               anchor=tk.W,
+                                               relief=tk.SUNKEN,
+                                               activebackground="grey5",
+                                               activeforeground="white",
+                                               borderwidth=0,
+                                               height=0, width=62,
+                                               padx=0, pady=0)
+        self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
+
+        # Close button
+        self.close_button = tk.Button(self.title_bar_frame,
+                                      text="X",
+                                      font=(font, '9', 'bold'),
+                                      justify=tk.LEFT,
+                                      bg="grey3",
+                                      fg="White",
+                                      activebackground="Red",
+                                      activeforeground="White",
+                                      borderwidth=0,
+                                      height=0, width=3,
+                                      padx=0, pady=0,
+                                      command=partial(self.close_leaderboard, partner))
+        self.close_button.grid(row=0, column=1)
+        
+        self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)  
+        
+        self.close_button.bind("<Enter>", self.close_on_enter)
+        self.close_button.bind("<Leave>", self.close_on_leave)            
+    
+    # These defnintions change the colour of the minimise and close button when the mouse hovers over them
+    def close_on_enter(self, partner):
+        self.close_button['background'] = 'red'
+        self.close_button['foreground'] = 'white'
+        
+    def close_on_leave(self, partner):
+        self.close_button['background'] = 'grey3'
+        self.close_button['foreground'] = 'white'
+    
+    #  Close help menue
+    def close_leaderboard(self, partner):
+        # Put help button back to normal
+        partner.leaderboard_button.config(state=tk.NORMAL)
+        self.leaderboardtoplevel.destroy()    
+    
+    def Main_pos(self, partner):
+        helproot=self.leaderboardtoplevel
+        windowx, windowy = helproot.winfo_rootx(), helproot.winfo_rooty()
+        pointerx, pointery = helproot.winfo_pointerx(), helproot.winfo_pointery()
+        newx, newy = (pointerx-windowx), (pointery-windowy)
+
+        def move_window(self):
+            newpointx, newpointy = helproot.winfo_pointerx(), helproot.winfo_pointery()
+            helproot.geometry('{}x{}+{}+{}'.format(450,450,newpointx-newx,
+                                                            newpointy-newy))
+        self.title_bar_drag_button.bind('<B1-Motion>', move_window)
+    
+class Withdraw:
+    def __init__(self, partner):
+        default_bg='grey20'
+        button_bg = 'grey10'
+        button_fg = 'grey90'
+        font = 'Bahnschrift Light SemiCondensed'
+        self.withdrawtoplevel = tk.Toplevel()
+        self.withdrawtoplevel.overrideredirect(True)
+        self.withdrawtoplevel.attributes('-alpha', 0.99)
+        self.withdrawtoplevel.attributes("-topmost", 1)        
+        _wwidth_,_wheight_ = 300, 300
+        self.withdrawtoplevel.geometry('{}x{}+{}+{}'.format(_wwidth_,_wheight_,int(screen_width/2-_wwidth_/2),
+                                                   int(screen_height/2-_wheight_/2)))    
+        self.withdrawtoplevel.attributes('-alpha', 0.99)
+        
+        partner.withdraw_button.config(state=tk.DISABLED)
+        
+        # Title bar frame
+        self.title_bar_frame = tk.Frame(self.withdrawtoplevel,
+                                        bg=default_bg,
+                                        padx=0, pady=0)
+        self.title_bar_frame.grid()        
+        
+        # Title bar drag button
+        self.title_bar_drag_button = tk.Button(self.title_bar_frame,
+                                               text='Hi-Low game version 0.7 Withdraw',
+                                               font=(font, '9'),
+                                               bg="grey5",
+                                               fg="white",
+                                               anchor=tk.W,
+                                               relief=tk.SUNKEN,
+                                               activebackground="grey5",
+                                               activeforeground="white",
+                                               borderwidth=0,
+                                               height=0, width=40,
+                                               padx=0, pady=0)
+        self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
+
+        # Close button
+        self.close_button = tk.Button(self.title_bar_frame,
+                                      text="X",
+                                      font=(font, '9', 'bold'),
+                                      justify=tk.LEFT,
+                                      bg="grey3",
+                                      fg="White",
+                                      activebackground="Red",
+                                      activeforeground="White",
+                                      borderwidth=0,
+                                      height=0, width=3,
+                                      padx=0, pady=0,
+                                      command=partial(self.close_withdraw, partner))
+        self.close_button.grid(row=0, column=1)
+        
+        self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)  
+        
+        self.close_button.bind("<Enter>", self.close_on_enter)
+        self.close_button.bind("<Leave>", self.close_on_leave)            
+    
+    # These defnintions change the colour of the minimise and close button when the mouse hovers over them
+    def close_on_enter(self, partner):
+        self.close_button['background'] = 'red'
+        self.close_button['foreground'] = 'white'
+        
+    def close_on_leave(self, partner):
+        self.close_button['background'] = 'grey3'
+        self.close_button['foreground'] = 'white'
+        
+    #  Close help menue
+    def close_withdraw(self, partner):
+        # Put help button back to normal
+        partner.withdraw_button.config(state=tk.NORMAL)
+        self.withdrawtoplevel.destroy()           
+    
+    def Main_pos(self, partner):
+        withdrawroot=self.withdrawtoplevel
+        windowx, windowy = withdrawroot.winfo_rootx(), withdrawroot.winfo_rooty()
+        pointerx, pointery = withdrawroot.winfo_pointerx(), withdrawroot.winfo_pointery()
+        newx, newy = (pointerx-windowx), (pointery-windowy)
+
+        def move_window(self):
+            newpointx, newpointy = withdrawroot.winfo_pointerx(), withdrawroot.winfo_pointery()
+            withdrawroot.geometry('{}x{}+{}+{}'.format(300,300,newpointx-newx,
+                                                       newpointy-newy))
+        self.title_bar_drag_button.bind('<B1-Motion>', move_window)
+
+class History:
+    def __init__(self, partner):
+        default_bg='grey20'
+        button_bg = 'grey10'
+        button_fg = 'grey90'
+        font = 'Bahnschrift Light SemiCondensed'
+        self.historytoplevel = tk.Toplevel()
+        self.historytoplevel.overrideredirect(True)
+        self.historytoplevel.attributes('-alpha', 0.99)
+        self.historytoplevel.attributes("-topmost", 1)        
+        _hwidth_,_hheight_ = 500, 200
+        self.historytoplevel.geometry('{}x{}+{}+{}'.format(_hwidth_,_hheight_,int(screen_width/2-_hwidth_/2),
+                                                   int(screen_height/2-_hheight_/2)))    
+        self.historytoplevel.attributes('-alpha', 0.99)
+        
+        partner.history_button.config(state=tk.DISABLED)
+        
+        # Title bar frame
+        self.title_bar_frame = tk.Frame(self.historytoplevel,
+                                        bg=default_bg,
+                                        padx=0, pady=0)
+        self.title_bar_frame.grid()        
+        
+        # Title bar drag button
+        self.title_bar_drag_button = tk.Button(self.title_bar_frame,
+                                               text='Hi-Low game version 0.7 Withdraw',
+                                               font=(font, '9'),
+                                               bg="grey5",
+                                               fg="white",
+                                               anchor=tk.W,
+                                               relief=tk.SUNKEN,
+                                               activebackground="grey5",
+                                               activeforeground="white",
+                                               borderwidth=0,
+                                               height=0, width=78,
+                                               padx=0, pady=0)
+        self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
+
+        # Close button
+        self.close_button = tk.Button(self.title_bar_frame,
+                                      text="X",
+                                      font=(font, '9', 'bold'),
+                                      justify=tk.LEFT,
+                                      bg="grey3",
+                                      fg="White",
+                                      activebackground="Red",
+                                      activeforeground="White",
+                                      borderwidth=0,
+                                      height=0, width=3,
+                                      padx=0, pady=0,
+                                      command=partial(self.close_withdraw, partner))
+        self.close_button.grid(row=0, column=1)
+        
+        self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)  
+        
+        self.close_button.bind("<Enter>", self.close_on_enter)
+        self.close_button.bind("<Leave>", self.close_on_leave)            
+    
+    # These defnintions change the colour of the minimise and close button when the mouse hovers over them
+    def close_on_enter(self, partner):
+        self.close_button['background'] = 'red'
+        self.close_button['foreground'] = 'white'
+        
+    def close_on_leave(self, partner):
+        self.close_button['background'] = 'grey3'
+        self.close_button['foreground'] = 'white'
+        
+    #  Close help menue
+    def close_withdraw(self, partner):
+        # Put help button back to normal
+        partner.history_button.config(state=tk.NORMAL)
+        self.historytoplevel.destroy()           
+    
+    def Main_pos(self, partner):
+        historyroot=self.historytoplevel
+        windowx, windowy = historyroot.winfo_rootx(), historyroot.winfo_rooty()
+        pointerx, pointery = historyroot.winfo_pointerx(), historyroot.winfo_pointery()
+        newx, newy = (pointerx-windowx), (pointery-windowy)
+
+        def move_window(self):
+            newpointx, newpointy = historyroot.winfo_pointerx(), historyroot.winfo_pointery()
+            historyroot.geometry('{}x{}+{}+{}'.format(500,200,newpointx-newx,
+                                                       newpointy-newy))
+        self.title_bar_drag_button.bind('<B1-Motion>', move_window)
+
+class Popup:
+    def __init__(self, partner):
+        default_bg='grey20'
+        button_bg = 'grey10'
+        button_fg = 'grey90'
+        font = 'Bahnschrift Light SemiCondensed'
+        self.popuptoplevel = tk.Toplevel()
+        self.popuptoplevel.overrideredirect(True)
+        self.popuptoplevel.attributes('-alpha', 0.99)
+        self.popuptoplevel.attributes("-topmost", 1)        
+        _hwidth_,_hheight_ = 500, 200
+        self.popuptoplevel.geometry('{}x{}+{}+{}'.format(_hwidth_,_hheight_,int(screen_width/2-_hwidth_/2),
+                                                   int(screen_height/2-_hheight_/2)))    
+        self.popuptoplevel.attributes('-alpha', 0.99)
+        
+        partner.buttons_off(self, True)
+        
+        # Title bar frame
+        self.title_bar_frame = tk.Frame(self.popuptoplevel,
+                                        bg=default_bg,
+                                        padx=0, pady=0)
+        self.title_bar_frame.grid()        
+        
+        # Title bar drag button
+        self.title_bar_drag_button = tk.Button(self.title_bar_frame,
+                                               text='Hi-Low game version 0.7 Withdraw',
+                                               font=(font, '9'),
+                                               bg="grey5",
+                                               fg="white",
+                                               anchor=tk.W,
+                                               relief=tk.SUNKEN,
+                                               activebackground="grey5",
+                                               activeforeground="white",
+                                               borderwidth=0,
+                                               height=0, width=83,
+                                               padx=0, pady=0)
+        self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
+        
+        self.accept_button = tk.Button(self.popuptoplevel,
+                                       text='Accept',
+                                       bg=default_bg,
+                                       fg=button_fg,
+                                       padx=0, pady=0,
+                                       command = lambda:self.close_popup(partner, True))
+        self.accept_button.grid(row=1, column=0)
+        
+        self.reject_button = tk.Button(self.popuptoplevel,
+                                       text='Reject',
+                                       bg=default_bg,
+                                       fg=button_fg,
+                                       padx=0, pady=0,
+                                       command = lambda:self.close_popup(partner, False))
+        self.reject_button.grid(row=2, column=0)        
+        
+        self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)    
+    #  Close help menue
+    def close_popup(self, partner, allow):
+        if allow == True:
+            partner.buttons_on(self)
+            self.popuptoplevel.destroy()
+        elif allow == False:
+            root.destroy()
+    
+    def Main_pos(self, partner):
+        popuproot=self.popuptoplevel
+        windowx, windowy = popuproot.winfo_rootx(), popuproot.winfo_rooty()
+        pointerx, pointery = popuproot.winfo_pointerx(), popuproot.winfo_pointery()
+        newx, newy = (pointerx-windowx), (pointery-windowy)
+
+        def move_window(self):
+            newpointx, newpointy = popuproot.winfo_pointerx(), popuproot.winfo_pointery()
+            popuproot.geometry('{}x{}+{}+{}'.format(500,200,newpointx-newx,
+                                                       newpointy-newy))
+        self.title_bar_drag_button.bind('<B1-Motion>', move_window)
+
 if __name__ == "__main__":
     root = tk.Tk()
     root.title('main')
     root.overrideredirect(True)  # turns off title bar, geometry
     screen_width, screen_height = root.winfo_screenwidth(), root.winfo_screenheight()
-    wwidth,wheight = 900, 500
+    wwidth,wheight = 900, 459
     root.geometry('{}x{}+{}+{}'.format(wwidth,wheight,int(screen_width/2-wwidth/2),
                                       int(screen_height/2-wheight/2)))    
     root.attributes('-alpha', 0.99)
