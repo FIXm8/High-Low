@@ -1,5 +1,5 @@
 # coding=UTF-8
-# version 0.8
+# version 0.9
 # importing needed modules
 import tkinter as tk
 import random
@@ -14,6 +14,7 @@ cards_dict = {'A': '1', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5',
               'Q': '12', 'K': '13'}
 history_list = []
 picked_card = ''
+highscore_dict = {}
 firsttime = True
 coins = 10000
 counter = 0
@@ -38,7 +39,7 @@ class MainApp:  # Main class for aplication which does most of the work
 
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.8',
+                                               text='Hi-Low game version 0.9',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -828,7 +829,7 @@ class Help:
 
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.8 Help',
+                                               text='Hi-Low game version 0.9 Help',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -911,7 +912,7 @@ class Leaderboard:
         self.leaderboardtoplevel.overrideredirect(True)
         self.leaderboardtoplevel.attributes('-alpha', 0.99)
         self.leaderboardtoplevel.attributes("-topmost", 1)
-        wwidth, wheight = 450, 450
+        wwidth, wheight = 384, 459
         self.leaderboardtoplevel.geometry('{}x{}+{}+{}'.format(wwidth, wheight, int(screen_width / 2 - wwidth / 2),
                                                                int(screen_height / 2 - wheight / 2)))
         self.leaderboardtoplevel.attributes('-alpha', 0.99)
@@ -922,11 +923,16 @@ class Leaderboard:
         self.title_bar_frame = tk.Frame(self.leaderboardtoplevel,
                                         bg=default_bg,
                                         padx=0, pady=0)
-        self.title_bar_frame.grid()
+        self.title_bar_frame.grid(row=0, column=0)
+
+        self.leaderboard_content_frame = tk.Frame(self.leaderboardtoplevel,
+                                                  bg=default_bg,
+                                                  padx=0, pady=0)
+        self.leaderboard_content_frame.grid(row=1, column=0)
 
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.8 Leaderboard',
+                                               text='Hi-Low game version 0.9 Leaderboard',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -935,8 +941,8 @@ class Leaderboard:
                                                activebackground="grey5",
                                                activeforeground="white",
                                                borderwidth=0,
-                                               height=0, width=62,
-                                               padx=0, pady=0)
+                                               height=0, width=59,
+                                               padx=1, pady=0)
         self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
 
         # Close button
@@ -954,10 +960,22 @@ class Leaderboard:
                                       command=partial(self.close_leaderboard, partner))
         self.close_button.grid(row=0, column=1)
 
+        self.leaderboard_text = tk.Text(self.leaderboard_content_frame,
+                                        font="Arial 12 bold",
+                                        bg=default_bg,
+                                        fg=button_fg,
+                                        height=26, width=41,
+                                        padx=7, pady=12)
+        self.leaderboard_text.grid(row=0, column=0)
+
+        self.leaderboard_text.tag_configure(
+            "Title", background=button_bg, foreground=button_fg, underline=1)
+
         self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)
 
         self.close_button.bind("<Enter>", self.close_on_enter)
         self.close_button.bind("<Leave>", self.close_on_leave)
+        self.draw_leaderboard(partner)
 
     # These defnintions change the colour of the minimise and close button when the mouse hovers over them
     def close_on_enter(self, partner):
@@ -974,6 +992,26 @@ class Leaderboard:
         partner.leaderboard_button.config(state=tk.NORMAL)
         self.leaderboardtoplevel.destroy()
 
+    def draw_leaderboard(self, partner):
+        self.leaderboard_text.configure(state="normal")
+        self.leaderboard_text.delete('1.0', tk.END)
+        try:
+            file = open('Leaderboard.csv', 'r')
+            highscore_dict = {i.strip('\n').rsplit(',', 1)[0]: i.strip(
+                '\n').rsplit(',', 1)[1] for i in file}
+            file.close()
+            sortedhighscore_dict = {n: s for n, s in sorted(
+                highscore_dict.items(), key=lambda item: int(item[1]), reverse=True)}
+            self.leaderboard_text.insert(
+                'end', 'Name\t\t\t\tScore\n', 'Title')
+            self.leaderboard_text.insert('end', '\n')
+            for i in sortedhighscore_dict:
+                self.leaderboard_text.insert('end', '%s\t\t\t\t%s\n' % (
+                    i.split('|', 1)[1], sortedhighscore_dict[i]))
+            self.leaderboard_text.configure(state="disabled")
+        except:
+            self.leaderboard_text.insert('end', 'ERROR\nFile failed to load')
+
     def Main_pos(self, partner):
         helproot = self.leaderboardtoplevel
         windowx, windowy = helproot.winfo_rootx(), helproot.winfo_rooty()
@@ -982,7 +1020,7 @@ class Leaderboard:
 
         def move_window(self):
             newpointx, newpointy = helproot.winfo_pointerx(), helproot.winfo_pointery()
-            helproot.geometry('{}x{}+{}+{}'.format(450, 450, newpointx - newx,
+            helproot.geometry('{}x{}+{}+{}'.format(384, 459, newpointx - newx,
                                                    newpointy - newy))
         self.title_bar_drag_button.bind('<B1-Motion>', move_window)
 
@@ -993,11 +1031,12 @@ class Withdraw:
         button_bg = 'grey10'
         button_fg = 'grey90'
         font = 'Bahnschrift Light SemiCondensed'
+        confirm = False
         self.withdrawtoplevel = tk.Toplevel()
         self.withdrawtoplevel.overrideredirect(True)
         self.withdrawtoplevel.attributes('-alpha', 0.99)
         self.withdrawtoplevel.attributes("-topmost", 1)
-        _wwidth_, _wheight_ = 300, 300
+        _wwidth_, _wheight_ = 269, 239
         self.withdrawtoplevel.geometry('{}x{}+{}+{}'.format(_wwidth_, _wheight_, int(screen_width / 2 - _wwidth_ / 2),
                                                             int(screen_height / 2 - _wheight_ / 2)))
         self.withdrawtoplevel.attributes('-alpha', 0.99)
@@ -1008,11 +1047,16 @@ class Withdraw:
         self.title_bar_frame = tk.Frame(self.withdrawtoplevel,
                                         bg=default_bg,
                                         padx=0, pady=0)
-        self.title_bar_frame.grid()
+        self.title_bar_frame.grid(row=0, column=0)
+
+        self.withdraw_content_frame = tk.Frame(self.withdrawtoplevel,
+                                               bg=default_bg,
+                                               padx=0, pady=0)
+        self.withdraw_content_frame.grid(row=1, column=0)
 
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.8 Withdraw',
+                                               text='Hi-Low game version 0.9 Withdraw',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -1040,6 +1084,44 @@ class Withdraw:
                                       command=partial(self.close_withdraw, partner))
         self.close_button.grid(row=0, column=1)
 
+        self.withdraw_label = tk.Label(self.withdraw_content_frame,
+                                       text='Are you sure you want to withdraw? You will stop the game here and your current coins ammount will be recorded on the leaderboard with your name. Enter your name below',
+                                       font=(font, '12'),
+                                       justify=tk.LEFT,
+                                       bg=default_bg,
+                                       fg=button_fg,
+                                       wrap=250,
+                                       padx=11, pady=10)
+        self.withdraw_label.grid(row=0, column=0)
+
+        self.withdraw_entry_box = tk.Entry(self.withdraw_content_frame,
+                                           font=(font, '14'),
+                                           justify=tk.CENTER,
+                                           bg="grey40",
+                                           fg="grey90",
+                                           borderwidth=0,
+                                           width=25)
+        self.withdraw_entry_box.grid(row=1, padx=0, pady=0)
+
+        self.withdraw_error_label = tk.Label(self.withdraw_content_frame,
+                                             text='',
+                                             font=(font, '12', 'italic'),
+                                             justify=tk.LEFT,
+                                             bg=default_bg,
+                                             fg=button_fg)
+        self.withdraw_error_label.grid(row=2, column=0)
+
+        self.withdraw_button = tk.Button(self.withdraw_content_frame,
+                                         bg=button_bg,
+                                         fg=button_fg,
+                                         text='Withdraw',
+                                         font=(font, '18', "bold"),
+                                         borderwidth=0,
+                                         padx=0, pady=0,
+                                         width=20,
+                                         command=lambda: self.withdraw_confirm(self))
+        self.withdraw_button.grid(row=3, column=0, pady=3)
+
         self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)
 
         self.close_button.bind("<Enter>", self.close_on_enter)
@@ -1060,6 +1142,34 @@ class Withdraw:
         partner.withdraw_button.config(state=tk.NORMAL)
         self.withdrawtoplevel.destroy()
 
+    def withdraw_confirm(self, partner):
+        global coins
+        playername = self.withdraw_entry_box.get()
+        button_text = self.withdraw_button.cget('text')
+        if button_text == 'Confirm':
+            file = open('Leaderboard.csv', 'r')
+            row_count = sum(1 for row in file)
+            file.close()
+            file = open('Leaderboard.csv', 'a')
+            file.write('\n%s|%s,%s' % (row_count, playername, coins))
+            file.close()
+        else:
+            if playername == '':
+                self.withdraw_error_label.configure(
+                    text='Enter your name above')
+            elif len(playername) > 16:
+                self.withdraw_error_label.configure(
+                    text='Name is too long')
+            else:
+                self.withdraw_label.configure(
+                    text='Are you sure you want to withdraw %s coins under the name %s?' % (coins, playername), font=('14'), height=5, width=27, pady=16)
+                self.withdraw_entry_box.configure(
+                    font='1', disabledbackground='grey20', disabledforeground='grey20')
+                self.withdraw_entry_box['state'] = tk.DISABLED
+                self.withdraw_error_label.configure(
+                    text='This action cannot be undone', font=('Bold'))
+                self.withdraw_button.configure(text='Confirm')
+
     def Main_pos(self, partner):
         withdrawroot = self.withdrawtoplevel
         windowx, windowy = withdrawroot.winfo_rootx(), withdrawroot.winfo_rooty()
@@ -1068,7 +1178,7 @@ class Withdraw:
 
         def move_window(self):
             newpointx, newpointy = withdrawroot.winfo_pointerx(), withdrawroot.winfo_pointery()
-            withdrawroot.geometry('{}x{}+{}+{}'.format(300, 300, newpointx - newx,
+            withdrawroot.geometry('{}x{}+{}+{}'.format(269, 239, newpointx - newx,
                                                        newpointy - newy))
         self.title_bar_drag_button.bind('<B1-Motion>', move_window)
 
@@ -1103,7 +1213,7 @@ class History:
 
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.8 History',
+                                               text='Hi-Low game version 0.9 History',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -1128,7 +1238,7 @@ class History:
                                       borderwidth=0,
                                       height=0, width=3,
                                       padx=0, pady=0,
-                                      command=partial(self.close_withdraw, partner))
+                                      command=partial(self.close_history, partner))
         self.close_button.grid(row=0, column=1, sticky=tk.W)
         self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)
 
@@ -1169,7 +1279,7 @@ class History:
         self.close_button['foreground'] = 'white'
 
     #  Close help menue
-    def close_withdraw(self, partner):
+    def close_history(self, partner):
         # Put help button back to normal
         partner.history_button.config(state=tk.NORMAL)
         self.historytoplevel.destroy()
@@ -1199,7 +1309,7 @@ class History:
                 if gainloss >= 0:
                     self.history_text.insert('end', ' Gain:', 'extra')
                     self.history_text.insert(
-                        'end', '	r +%s' % (gainloss), 'Gain')
+                        'end', ' +%s' % (gainloss), 'Gain')
                 elif gainloss < 0:
                     self.history_text.insert('end', ' Loss:', 'extra')
                     self.history_text.insert(
@@ -1249,7 +1359,7 @@ class Popup:
 
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.8 Popup',
+                                               text='Hi-Low game version 0.9 Popup',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
