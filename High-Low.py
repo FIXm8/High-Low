@@ -1,5 +1,5 @@
 # coding=UTF-8
-# version 0.9
+# version 1.0
 # importing needed modules
 import tkinter as tk
 import random
@@ -16,18 +16,22 @@ history_list = []
 picked_card = ''
 highscore_dict = {}
 firsttime = True
+historyopen = False
 coins = 10000
-counter = 0
 
 
 class MainApp:  # Main class for aplication which does most of the work
+    global Cardbg
+    global Cardfg
+    global historyopen
+
     def __init__(self, parent):
         default_bg = 'grey20'
         button_bg = 'grey10'
         button_fg = 'grey90'
-        font = 'Bahnschrift Light SemiCondensed'
+        font = 'Arial'
 
-        self.Mainframe = tk.Frame(bg='grey50',  # Frame holding all widgts (everything)
+        self.Mainframe = tk.Frame(bg='grey50',  # Frame holding all widgts
                                   padx=0, pady=0)
         self.Mainframe.grid()
 
@@ -39,7 +43,7 @@ class MainApp:  # Main class for aplication which does most of the work
 
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.9',
+                                               text='Hi-Low V1.0',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -48,7 +52,7 @@ class MainApp:  # Main class for aplication which does most of the work
                                                activebackground="grey5",
                                                activeforeground="white",
                                                borderwidth=0,
-                                               height=0, width=141,
+                                               height=0, width=121,
                                                padx=0, pady=0)
         self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
 
@@ -57,9 +61,9 @@ class MainApp:  # Main class for aplication which does most of the work
                                          text="—",
                                          font=(font, '9', 'bold'),
                                          justify=tk.LEFT,
-                                         bg="grey3",
+                                         bg="grey5",
                                          fg="white",
-                                         activebackground="grey3",
+                                         activebackground="grey5",
                                          activeforeground="white",
                                          borderwidth=0,
                                          height=0, width=3,
@@ -72,7 +76,7 @@ class MainApp:  # Main class for aplication which does most of the work
                                       text="X",
                                       font=(font, '9', 'bold'),
                                       justify=tk.LEFT,
-                                      bg="grey3",
+                                      bg="grey5",
                                       fg="White",
                                       activebackground="Red",
                                       activeforeground="White",
@@ -127,10 +131,11 @@ class MainApp:  # Main class for aplication which does most of the work
                                             fg="white",
                                             bd=0,
                                             padx=10, pady=9,
-                                            command=lambda: self.get_leaderboard())
+                                            command=lambda:
+                                            self.get_leaderboard())
         self.leaderboard_button.grid(row=0, column=2)
 
-        #  withdraw button, Opens the leaderboard with class withdraw
+        #  withdraw button, Opens the withdraw menu with the withdraw class
         self.withdraw_button = tk.Button(self.topbar_frame,
                                          text="Withdraw",
                                          font="Arial 10 bold",
@@ -159,7 +164,7 @@ class MainApp:  # Main class for aplication which does most of the work
                                    padx=2, pady=2)
         self.left_frame.grid(row=1, column=0, padx=0, pady=20)
 
-        #  shows user information
+        #  shows user information such as error in betting
         self.info_label = tk.Label(self.left_frame,
                                    text='Welcome!',
                                    font='Arial 12 bold',
@@ -185,9 +190,10 @@ class MainApp:  # Main class for aplication which does most of the work
                                        text='▲',
                                        font=(font, '28'),
                                        borderwidth=0,
-                                       padx=0, pady=0,
-                                       width=14, height=0,
-                                       command=lambda: self.inputcheck(0, 'Higher'))
+                                       padx=3, pady=0,
+                                       width=12, height=0,
+                                       command=lambda: self.inputcheck(
+                                           0, 'Higher'))
         self.higher_button.grid(row=2, padx=0, pady=1)
         #  user entes amount of coins here to bet
         self.entry_box = tk.Entry(self.left_frame,
@@ -196,7 +202,7 @@ class MainApp:  # Main class for aplication which does most of the work
                                   bg="grey40",
                                   fg="grey90",
                                   borderwidth=0,
-                                  width=19)
+                                  width=20)
         self.entry_box.grid(row=3, padx=0, pady=5)
 
         #  frame holding input edit button
@@ -210,11 +216,12 @@ class MainApp:  # Main class for aplication which does most of the work
                                             bg=button_bg,
                                             fg=button_fg,
                                             text='Clear',
-                                            font=(font, '9'),
+                                            font=(font, '8'),
                                             borderwidth=0,
                                             padx=0, pady=0,
                                             width=4, height=0,
-                                            command=lambda: self.inputmultiply('Clear'))
+                                            command=lambda: self.inputmultiply(
+                                                'Clear'))
         self.input_clear_button.grid(row=0, column=0, padx=2, pady=0)
 
         #  add 100 to input button
@@ -222,11 +229,12 @@ class MainApp:  # Main class for aplication which does most of the work
                                               bg=button_bg,
                                               fg=button_fg,
                                               text='+100',
-                                              font=(font, '9'),
+                                              font=(font, '8'),
                                               borderwidth=0,
                                               padx=0, pady=0,
                                               width=0, height=0,
-                                              command=lambda: self.inputmultiply('+100'))
+                                              command=lambda:
+                                              self.inputmultiply('+100'))
         self.input_add_100_button.grid(row=0, column=1, padx=2, pady=0)
 
         #   add 1000 to input button
@@ -234,11 +242,12 @@ class MainApp:  # Main class for aplication which does most of the work
                                                bg=button_bg,
                                                fg=button_fg,
                                                text='+1000',
-                                               font=(font, '9'),
+                                               font=(font, '8'),
                                                borderwidth=0,
                                                padx=0, pady=0,
                                                width=0, height=0,
-                                               command=lambda: self.inputmultiply('+1000'))
+                                               command=lambda:
+                                               self.inputmultiply('+1000'))
         self.input_add_1000_button.grid(row=0, column=2, padx=2, pady=0)
 
         #  half input button
@@ -246,11 +255,12 @@ class MainApp:  # Main class for aplication which does most of the work
                                           bg=button_bg,
                                           fg=button_fg,
                                           text='1/2',
-                                          font=(font, '9'),
+                                          font=(font, '8'),
                                           borderwidth=0,
                                           padx=0, pady=0,
                                           width=0, height=0,
-                                          command=lambda: self.inputmultiply(0.5))
+                                          command=lambda: self.inputmultiply(
+                                              0.5))
         self.inputx0_5_button.grid(row=0, column=3, padx=2, pady=0)
 
         #  multiply input by 1.33 button
@@ -258,11 +268,12 @@ class MainApp:  # Main class for aplication which does most of the work
                                            bg=button_bg,
                                            fg=button_fg,
                                            text='x1.33',
-                                           font=(font, '9'),
+                                           font=(font, '8'),
                                            borderwidth=0,
                                            padx=0, pady=0,
                                            width=0, height=0,
-                                           command=lambda: self.inputmultiply(1.33))
+                                           command=lambda: self.inputmultiply(
+                                               1.33))
         self.inputx1_33_button.grid(row=0, column=4, padx=2, pady=0)
 
         #  multiply input by 1.5 button
@@ -270,11 +281,12 @@ class MainApp:  # Main class for aplication which does most of the work
                                           bg=button_bg,
                                           fg=button_fg,
                                           text='x1.5',
-                                          font=(font, '9'),
+                                          font=(font, '8'),
                                           borderwidth=0,
                                           padx=0, pady=0,
                                           width=0, height=0,
-                                          command=lambda: self.inputmultiply(1.5))
+                                          command=lambda: self.inputmultiply(
+                                              1.5))
         self.inputx1_5_button.grid(row=0, column=5, padx=2, pady=0)
 
         #  multiply input by 2 button
@@ -282,7 +294,7 @@ class MainApp:  # Main class for aplication which does most of the work
                                         bg=button_bg,
                                         fg=button_fg,
                                         text='x2',
-                                        font=(font, '9'),
+                                        font=(font, '8'),
                                         borderwidth=0,
                                         padx=0, pady=0,
                                         width=0, height=0,
@@ -294,11 +306,12 @@ class MainApp:  # Main class for aplication which does most of the work
                                           bg=button_bg,
                                           fg=button_fg,
                                           text='x2.5',
-                                          font=(font, '9'),
+                                          font=(font, '8'),
                                           borderwidth=0,
                                           padx=0, pady=0,
                                           width=0, height=0,
-                                          command=lambda: self.inputmultiply(2.5))
+                                          command=lambda: self.inputmultiply(
+                                              2.5))
         self.inputx2_5_button.grid(row=0, column=7, padx=2, pady=0)
 
         #  multiply input by 3 button
@@ -306,7 +319,7 @@ class MainApp:  # Main class for aplication which does most of the work
                                         bg=button_bg,
                                         fg=button_fg,
                                         text='x3',
-                                        font=(font, '9'),
+                                        font=(font, '8'),
                                         borderwidth=0,
                                         padx=0, pady=0,
                                         width=0, height=0,
@@ -318,11 +331,12 @@ class MainApp:  # Main class for aplication which does most of the work
                                           bg=button_bg,
                                           fg=button_fg,
                                           text='Max',
-                                          font=(font, '9'),
+                                          font=(font, '8'),
                                           borderwidth=0,
                                           padx=0, pady=0,
                                           width=0, height=0,
-                                          command=lambda: self.inputmultiply('Max'))
+                                          command=lambda: self.inputmultiply(
+                                              'Max'))
         self.input_max_button.grid(row=0, column=9, padx=2, pady=0)
 
         #  bet lower button
@@ -332,9 +346,10 @@ class MainApp:  # Main class for aplication which does most of the work
                                       text='▼',
                                       font=(font, '28'),
                                       borderwidth=0,
-                                      padx=0, pady=0,
-                                      width=14, height=0,
-                                      command=lambda: self.inputcheck(0, 'Lower'))
+                                      padx=3, pady=0,
+                                      width=12, height=0,
+                                      command=lambda: self.inputcheck(
+                                          0, 'Lower'))
         self.lower_button.grid(row=5, padx=0, pady=1)
 
         #  shows the multiplyer for betting for a lower number
@@ -354,7 +369,7 @@ class MainApp:  # Main class for aplication which does most of the work
                                         font=(font, '13', "bold"),
                                         borderwidth=0,
                                         padx=4, pady=0,
-                                        width=27, height=0,
+                                        width=26, height=0,
                                         command=lambda: self.get_history())
         self.history_button.grid(row=7, column=0, padx=0, pady=2)
 
@@ -366,7 +381,7 @@ class MainApp:  # Main class for aplication which does most of the work
 
         #  loads random card and shows it on screen
         self.random_card()
-
+        # canvas holding cards
         cardback = 'Images/Back.png'
         root.Back = Back = tk.PhotoImage(file=cardback)
         self.card = tk.Canvas(self.center_frame,
@@ -378,13 +393,13 @@ class MainApp:  # Main class for aplication which does most of the work
         self.card.create_image(121, -336, image=Back, anchor=tk.N)
         self.card.grid(row=1, padx=2, pady=10)
 
-        # frame to hold other buttons
+        # frame to hold other bet buttons
         self.right_frame = tk.Frame(self.content_frame,
                                     bg=default_bg,
                                     padx=2, pady=2)
         self.right_frame.grid(row=1, column=2, padx=0, pady=20)
 
-        #  shows information to the user such as errors and which card is drawn
+        #  shows user which card is drawn
         self.card_label = tk.Label(self.right_frame,
                                    text='',
                                    font='Arial 12 bold',
@@ -406,7 +421,8 @@ class MainApp:  # Main class for aplication which does most of the work
                                            borderwidth=0,
                                            padx=5, pady=0,
                                            width=20, height=0,
-                                           command=lambda: self.inputcheck(1.44, '2,3,4,5,6,7,8,9,10'))
+                                           command=lambda: self.inputcheck(
+                                               1.44, '2,3,4,5,6,7,8,9,10'))
         self.two_to_ten_button.grid(row=1, padx=0, pady=0)
 
         #  frame holding  R B G bet buttons
@@ -422,7 +438,7 @@ class MainApp:  # Main class for aplication which does most of the work
                                   text='Red  x3',
                                   font=(font, '14', "bold"),
                                   borderwidth=0,
-                                  padx=0, pady=5,
+                                  padx=1, pady=5,
                                   width=8, height=1,
                                   command=lambda: self.inputcheck(3, 'Red'))
         self.R_button.grid(row=0, column=0, padx=0, pady=0)
@@ -434,7 +450,7 @@ class MainApp:  # Main class for aplication which does most of the work
                                   text='Black  x3',
                                   font=(font, '14', "bold"),
                                   borderwidth=0,
-                                  padx=0, pady=5,
+                                  padx=1, pady=5,
                                   width=8, height=1,
                                   command=lambda: self.inputcheck(3, 'Black'))
         self.B_button.grid(row=0, column=1, padx=1, pady=0)
@@ -446,7 +462,7 @@ class MainApp:  # Main class for aplication which does most of the work
                                   text='Green  x3',
                                   font=(font, '14', "bold"),
                                   borderwidth=0,
-                                  padx=0, pady=5,
+                                  padx=1, pady=5,
                                   width=8, height=1,
                                   command=lambda: self.inputcheck(3, 'Green'))
         self.G_button.grid(row=0, column=2, padx=0, pady=0)
@@ -460,7 +476,8 @@ class MainApp:  # Main class for aplication which does most of the work
                                     borderwidth=0,
                                     padx=5, pady=0,
                                     width=20, height=0,
-                                    command=lambda: self.inputcheck(4.33, 'J,Q,K'))
+                                    command=lambda: self.inputcheck(
+                                        4.33, 'J,Q,K'))
         self.JQK_button.grid(row=3, padx=0, pady=0)
 
         #  ak and a bet buttons frame
@@ -502,24 +519,27 @@ class MainApp:  # Main class for aplication which does most of the work
                                       borderwidth=0,
                                       padx=5, pady=0,
                                       width=20, height=0,
-                                      command=lambda: self.inputcheck(39, 'Joker'))
+                                      command=lambda: self.inputcheck(
+                                          39, 'Joker'))
         self.Joker_button.grid(row=5, padx=0, pady=0)
 
-        # Drag window if button down on title bar
+        # Drag window if mouse button down on title bar
         self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)
-
+        # chages colour of buttons if hovered over
         self.minimise_button.bind("<Enter>", self.minimise_on_enter)
         self.minimise_button.bind("<Leave>", self.minimise_on_leave)
 
         self.close_button.bind("<Enter>", self.close_on_enter)
         self.close_button.bind("<Leave>", self.close_on_leave)
-
-        # Show window when icon poressed in taskbar
+        # Show window when icon pressed in taskbar
         self.Mainframe.bind("<Map>", self.mapped)
-
+        # calls the popup class to show to the user.
         call_popup = Popup(self)
+        # adds an icon into the taskbar so if the window is not focusd on it
+        # can be accessed easily
+        call_icon = Icon(self)
+    # definitions call other classes
 
-    # Make window moveable
     def get_help(self):
         call_help = Help(self)
 
@@ -530,38 +550,40 @@ class MainApp:  # Main class for aplication which does most of the work
         call_withdraw = Withdraw(self)
 
     def get_history(self):
-        call_history = History(self)
+        self.call_history = History(self)
 
+    # Allows the window to move
     def Main_pos(self, partner):
         windowx, windowy = root.winfo_rootx(), root.winfo_rooty()
         pointerx, pointery = root.winfo_pointerx(), root.winfo_pointery()
         newx, newy = (pointerx - windowx), (pointery - windowy)
 
         def move_window(self):
-            newpointx, newpointy = root.winfo_pointerx(), root.winfo_pointery()
-            root.geometry('{}x{}+{}+{}'.format(wwidth, wheight, newpointx - newx,
-                                               newpointy - newy))
+            _newpointx = root.winfo_pointerx()
+            _newpointy = root.winfo_pointery()
+            root.geometry('{}x{}+{}+{}'.format(
+                wwidth, wheight, _newpointx - newx, _newpointy - newy))
         self.title_bar_drag_button.bind('<B1-Motion>', move_window)
 
     # These definitions allow the program to be minimised
     def minimise(self):
         root.update_idletasks()
         root.overrideredirect(False)
-        # root.state('withdrawn')
-        root.state('iconic')
+        root.state('withdraw')
 
     def mapped(self, parent):
         root.update_idletasks()
         root.overrideredirect(True)
         root.state('normal')
-    # These defnintions change the colour of the minimise and close button when the mouse hovers over them
 
+    # These defnintions change the colour of the minimise and close button when
+    # the mouse hovers over them
     def close_on_enter(self, partner):
         self.close_button['background'] = 'red'
         self.close_button['foreground'] = 'white'
 
     def close_on_leave(self, partner):
-        self.close_button['background'] = 'grey3'
+        self.close_button['background'] = 'grey5'
         self.close_button['foreground'] = 'white'
 
     def minimise_on_enter(self, partner):
@@ -569,11 +591,12 @@ class MainApp:  # Main class for aplication which does most of the work
         self.minimise_button['foreground'] = 'white'
 
     def minimise_on_leave(self, partner):
-        self.minimise_button['background'] = 'grey3'
+        self.minimise_button['background'] = 'grey5'
         self.minimise_button['foreground'] = 'white'
 
-    def inputmultiply(self, multiply):  # this definition allows the user to quickly
-        # edit their betting amount so they dont have to type it out every time
+    def inputmultiply(self, multiply):  # this definition allows the user to
+        # quickly edit their betting amount so they dont have to type it out
+        # every time
         global coins
         valid_characters = '1234567890'
         inputvalue = self.entry_box.get()
@@ -605,7 +628,7 @@ class MainApp:  # Main class for aplication which does most of the work
                 self.entry_box.delete(0, tk.END)
                 self.entry_box.insert(0, coins)
 
-    # This definition choses a random card from the deck and places it on the screen
+    # This definition choses a random card from the deck and shows it on screen
     def random_card(self):
         global Cardbg
         global Cardfg
@@ -613,6 +636,7 @@ class MainApp:  # Main class for aplication which does most of the work
         global randombg
         global firsttime
         global card_label_set
+        global firstcard
         if random.randint(1, 40) == 1:
             randombg = 'Joker.png'
             randomfg = 'Joker.png'
@@ -626,12 +650,13 @@ class MainApp:  # Main class for aplication which does most of the work
                 picked_card = 'Joker!'
             else:
                 picked_card = str(randomfg[:-4]) + ' ' + str(randombg[:-4])
-            card_label_set = text = picked_card
+            card_label_set = firstcard = picked_card
             self.configure_higher_lower()
             firsttime = False
 
-    #  This definition is run when a person enters an amount to bet and presses one of the bet buttons
-    #  It checks if the value entred is a valid amount, if it is the Bet definition is run
+    # This definition is run when a person enters an amount to bet and presses
+    # one of the bet buttons It checks if the value entred is a valid amount,
+    # if it is, the Bet definition is run
     def inputcheck(self, multiplier, button):
         valid_characters = '1234567890.'
         inputvalue = self.entry_box.get()
@@ -657,27 +682,31 @@ class MainApp:  # Main class for aplication which does most of the work
                 self.info_label.configure(text="Whole numbers only!")
                 self.buttons_on(self, False)
 
-    #  This definition takes the random card made by the random_card definition and displays it with
-    #  an animation and also updates the display text and updates the users balance
+    # This definition takes the random card made by the random_card definition
+    # and displays it with an animation and also updates the display text and
+    # updates the users balance. it also updates the coins, history and checks
+    # if the user has run out of coins then it calls the Endgame class
     def Bet(self, partner, multiplier, button):
         global counter
         global randomfg
         global randombg
         global coins
 
-        def animate():  # This definition runs on a diffrent thread so time.sleep can be used without hanging the program
+        def animate():  # This definition runs on a diffrent thread so
+            # time.sleep can be used without hanging the program
             global coins
             inputvalue = self.entry_box.get()
             self.card.delete("all")
+            # creates the cards in the canvas
             self.card.create_image(121, 0, image=Cardbg, anchor=tk.N)
             self.card.create_image(121, 0, image=Cardfg, anchor=tk.N)
             self.card.create_image(121, 0, image=Oldbg, anchor=tk.N)
             self.card.create_image(121, 0, image=Oldfg, anchor=tk.N)
             oldcards = str(self.card.find_all()[-1])
             if randomfg == 'Joker.png':
-                picked_card = 'Joker!'
+                _picked_card = 'Joker!'
             else:
-                picked_card = str(randomfg[:-4]) + ' ' + str(randombg[:-4])
+                _picked_card = str(randomfg[:-4]) + ' ' + str(randombg[:-4])
             self.card_label.configure(text="Drawing card...")
             for i in range(28):
                 time.sleep(0.014)
@@ -694,52 +723,71 @@ class MainApp:  # Main class for aplication which does most of the work
                 time.sleep(0.014)
                 last = last - 1
                 self.card.delete(last)
-            self.card_label.configure(text=picked_card)
-            # this section calculates
+            self.card_label.configure(text=_picked_card)
+            # this section calculates reward/loss
             card, suite = randomfg[:-4], randombg[:-4]
-            # reward/loss
             if card != 'Joker':
                 card_number = int(cards_dict.get(str(randomfg[:-4])))
-            if card in button or suite in button:
-                newcoins = int(round(float(inputvalue) * float(multiplier)))
-                coins = coins + newcoins
-                self.coins_label.configure(text=str(coins) + ' coins')
+            if button == 'Joker':
+                if card == button:
+                    _newcoins = int(
+                        round(float(inputvalue) * float(multiplier)))
+                    coins = coins + _newcoins
+            else:
+                if card in button or suite in button:
+                    _newcoins = int(
+                        round(float(inputvalue) * float(multiplier)))
+                    coins = coins + _newcoins
             if button == 'Higher':
                 if card != 'Joker':
                     if card_number > int(cards_dict.get(str(Old_card[0]))):
-                        newcoins = round(
-                            float(self.higher_label.cget('text')[1:]) * float(inputvalue))
-                        coins = coins + newcoins
+                        _newcoins = round(
+                            float(self.higher_label.cget('text')[1:]) * float(
+                                inputvalue))
+                        coins = coins + _newcoins
             if button == 'Lower':
                 if card != 'Joker':
                     if card_number < int(cards_dict.get(str(Old_card[0]))):
-                        newcoins = round(
-                            float(self.lower_label.cget('text')[1:]) * float(inputvalue))
-                        coins = coins + newcoins
+                        _newcoins = round(
+                            float(self.lower_label.cget('text')[1:]) * float(
+                                inputvalue))
+                        coins = coins + _newcoins
             coins = int(coins) - int(inputvalue)
-            self.coins_label.configure(text=str(coins) + ' coins')
+            # configures coins amount
+            if coins == 1:
+                self.coins_label.configure(text=str(coins) + ' coin')
+            else:
+                self.coins_label.configure(text=str(coins) + ' coins')
             self.buttons_on(self, False)
             if button == 'Higher':
                 hilomultiplier = float(self.higher_label.cget('text')[1:])
             elif button == 'Lower':
                 hilomultiplier = float(self.lower_label.cget('text')[1:])
-            else:
+            else:  # This part ads the betting information to the history list
                 hilomultiplier = 0
             history_list.append(str(str(card) + '|' + suite + '|' +
-                                    str(coins) + '|' + str(multiplier) + '|' + str(hilomultiplier) +
-                                    '|' + str(inputvalue) + '|' + str(button)))
+                                    str(coins) + '|' + str(
+                                        multiplier) + '|' + str(
+                                            hilomultiplier) + '|' + str(
+                                                inputvalue) + '|' + str(
+                                                    button)))
+            if coins < 100:  # if user runs out of coins end the game
+                call_endgame = Endgame(self)
             self.configure_higher_lower()
-        counter += 1
+            if historyopen is True:
+                self.call_history.update_history()
         self.info_label.configure(text='Welcome!')
         self.buttons_off(self, full=False)
         Oldbg, Oldfg = Cardbg, Cardfg
         if self.card_label.cget('text') != 'Joker!':
             Old_card = self.card_label.cget('text').split(' ')
         self.random_card()
+        # This runs the animate definition on another thread allowing the
+        # program to function correctly
         animation_thred = threading.Thread(target=animate)
         animation_thred.start()
 
-    # definition that sets teh multipliers for high or low bet
+    # definition that sets the multipliers for high or low bet
     def configure_higher_lower(self):
         global randomfg
         card = randomfg[:-4]
@@ -751,15 +799,18 @@ class MainApp:  # Main class for aplication which does most of the work
             self.lower_label.configure(text='')
             self.lower_button['state'] = tk.DISABLED
         else:
+            # using a formula it determins the multiplier
             if card_number > 1:
                 self.lower_label.configure(
-                    text='x' + str(round(0.975 / (((3 * (card_number - 1)) / 40)), 2)))
+                    text='x' + str(round(
+                        0.975 / (((3 * (card_number - 1)) / 40)), 2)))
             else:
                 self.lower_label.configure(text='')
                 self.lower_button['state'] = tk.DISABLED
             if card_number < 13:
                 self.higher_label.configure(
-                    text='x' + str(round(0.975 / (((3 * (13 - card_number)) / 40)), 2)))
+                    text='x' + str(round(
+                        0.975 / (((3 * (13 - card_number)) / 40)), 2)))
             else:
                 self.higher_label.configure(text='')
                 self.higher_button['state'] = tk.DISABLED
@@ -799,19 +850,20 @@ class MainApp:  # Main class for aplication which does most of the work
             self.history_button['state'] = tk.NORMAL
 
 
-class Help:
+class Help:  # Help class shows the user the help menu
     def __init__(self, partner):
         default_bg = 'grey20'
         button_bg = 'grey10'
         button_fg = 'grey90'
-        font = 'Bahnschrift Light SemiCondensed'
+        font = 'Arial'
         self.helptoplevel = tk.Toplevel()
         self.helptoplevel.overrideredirect(True)
         self.helptoplevel.attributes('-alpha', 0.99)
         self.helptoplevel.attributes("-topmost", 1)
-        hwidth, hheight = 499, 250
-        self.helptoplevel.geometry('{}x{}+{}+{}'.format(hwidth, hheight, int(screen_width / 2 - hwidth / 2),
-                                                        int(screen_height / 2 - hheight / 2)))
+        __wwidth, __wheight = 499, 250
+        self.helptoplevel.geometry('{}x{}+{}+{}'.format(
+            __wwidth, __wheight, int(screen_width / 2 - __wwidth / 2), int(
+                screen_height / 2 - __wheight / 2)))
         self.helptoplevel.attributes('-alpha', 0.99)
 
         partner.help_button.config(state=tk.DISABLED)
@@ -829,7 +881,7 @@ class Help:
 
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.9 Help',
+                                               text='Hi-Low V1.0 Help',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -838,8 +890,8 @@ class Help:
                                                activebackground="grey5",
                                                activeforeground="white",
                                                borderwidth=0,
-                                               height=0, width=77,
-                                               padx=4, pady=0)
+                                               height=0, width=66,
+                                               padx=6, pady=0)
         self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
 
         # Close button
@@ -847,16 +899,17 @@ class Help:
                                       text="X",
                                       font=(font, '9', 'bold'),
                                       justify=tk.LEFT,
-                                      bg="grey3",
+                                      bg="grey5",
                                       fg="White",
                                       activebackground="Red",
                                       activeforeground="White",
                                       borderwidth=0,
                                       height=0, width=3,
                                       padx=0, pady=0,
-                                      command=partial(self.close_help, partner))
+                                      command=partial(
+                                          self.close_help, partner))
         self.close_button.grid(row=0, column=1)
-
+        # Text that is displayed on screen
         self.help_text = tk.Label(self.help_content_frame,
                                   text='',
                                   font=(font, '12'),
@@ -865,56 +918,79 @@ class Help:
                                   wrap=490,
                                   bg=default_bg,
                                   fg=button_fg,
-                                  padx=10, pady=10)
+                                  padx=7, pady=10)
         self.help_text.grid(row=2)
-        self.help_text.configure(text='Welcome To Hi-Low! Bet a certain amount of coins on what the next card will be. Type your ammount into the enry box or use the buttons underneth to help you quickly change your amount. Click one of the buttons to bet higher, lower, red suit, joker, etc. You can see your coins in the top left. Minimum bet is 100 coins. Try to win the most amount of coins and hit withdraw to have your name on the leaderboard. You can see other players high scores on the leaderboard aswell. Press the history button to see the past cards drawn. Good luck!\nWARNING: Gambling can be addictive, if you have gambling problems stop imediatly and call (NZ)0800 654 655 or visit www.gamblinghelpline.co.nz\nRecomended age 18+')
-
+        self.help_text.configure(text='Welcome To Hi-Low! Bet a certain amount'
+                                 ' of coins on what the next card will be. Typ'
+                                 'e your amount into the entry box or use the '
+                                 'buttons underneath to help you quickly chang'
+                                 'e your amount. Click one of the buttons to b'
+                                 'et higher, lower, red suit, joker, etc. You '
+                                 'can see your coins in the top left. Minimum '
+                                 'bet is 100 coins. Try to win the most amount'
+                                 ' of coins and hit withdraw to have your name'
+                                 ' on the leader board. You can see other play'
+                                 'ers high scores on the leader board as well.'
+                                 ' Press the history button to see the past ca'
+                                 'rds drawn. Good luck!\nWARNING: Gambling can'
+                                 ' be addictive, if you have gambling problems'
+                                 ' stop immediately and call (NZ)0800 654 655 '
+                                 'or visit www.gamblinghelpline.co.nz Recomen'
+                                 'ded for mature audience. Game made by Saiful'
+                                 'lah Imran')
+        # binds mouse 1 to move the window around
         self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)
-
+        # changes the colour of the close button if mouse hovers over
         self.close_button.bind("<Enter>", self.close_on_enter)
         self.close_button.bind("<Leave>", self.close_on_leave)
 
-    # These defnintions change the colour of the minimise and close button when the mouse hovers over them
+    # These defnintions change the colour of the minimise and close button when
+    # the mouse hovers over them
     def close_on_enter(self, partner):
         self.close_button['background'] = 'red'
         self.close_button['foreground'] = 'white'
 
     def close_on_leave(self, partner):
-        self.close_button['background'] = 'grey3'
+        self.close_button['background'] = 'grey5'
         self.close_button['foreground'] = 'white'
 
-    #  Close help menue
+    #  Close help menu
     def close_help(self, partner):
         # Put help button back to normal
         partner.help_button.config(state=tk.NORMAL)
         self.helptoplevel.destroy()
+    # Allows the user to drag around the window
 
     def Main_pos(self, partner):
         helproot = self.helptoplevel
         windowx, windowy = helproot.winfo_rootx(), helproot.winfo_rooty()
-        pointerx, pointery = helproot.winfo_pointerx(), helproot.winfo_pointery()
+        pointerx, pointery = helproot.winfo_pointerx(
+        ), helproot.winfo_pointery()
         newx, newy = (pointerx - windowx), (pointery - windowy)
 
         def move_window(self):
-            newpointx, newpointy = helproot.winfo_pointerx(), helproot.winfo_pointery()
-            helproot.geometry('{}x{}+{}+{}'.format(499, 250, newpointx - newx,
-                                                   newpointy - newy))
+            _newpointx = helproot.winfo_pointerx()
+            __newpointy = helproot.winfo_pointery()
+            helproot.geometry('{}x{}+{}+{}'.format(
+                499, 250, _newpointx - newx, __newpointy - newy))
         self.title_bar_drag_button.bind('<B1-Motion>', move_window)
 
 
-class Leaderboard:
+class Leaderboard:  # leaderboard class shows the leaderboard on screen
     def __init__(self, partner):
         default_bg = 'grey20'
         button_bg = 'grey10'
         button_fg = 'grey90'
-        font = 'Bahnschrift Light SemiCondensed'
+        font = 'Arial'
         self.leaderboardtoplevel = tk.Toplevel()
         self.leaderboardtoplevel.overrideredirect(True)
         self.leaderboardtoplevel.attributes('-alpha', 0.99)
         self.leaderboardtoplevel.attributes("-topmost", 1)
-        wwidth, wheight = 384, 459
-        self.leaderboardtoplevel.geometry('{}x{}+{}+{}'.format(wwidth, wheight, int(screen_width / 2 - wwidth / 2),
-                                                               int(screen_height / 2 - wheight / 2)))
+        __wwidth, __wheight = 384, 459
+        self.leaderboardtoplevel.geometry(
+            '{}x{}+{}+{}'.format(__wwidth, __wheight, int(
+                screen_width / 2 - __wwidth / 2), int(
+                    screen_height / 2 - __wheight / 2)))
         self.leaderboardtoplevel.attributes('-alpha', 0.99)
 
         partner.leaderboard_button.config(state=tk.DISABLED)
@@ -932,7 +1008,7 @@ class Leaderboard:
 
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.9 Leaderboard',
+                                               text='Hi-Low V1.0 Leaderboard',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -941,8 +1017,8 @@ class Leaderboard:
                                                activebackground="grey5",
                                                activeforeground="white",
                                                borderwidth=0,
-                                               height=0, width=59,
-                                               padx=1, pady=0)
+                                               height=0, width=50,
+                                               padx=3, pady=0)
         self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
 
         # Close button
@@ -950,40 +1026,42 @@ class Leaderboard:
                                       text="X",
                                       font=(font, '9', 'bold'),
                                       justify=tk.LEFT,
-                                      bg="grey3",
+                                      bg="grey5",
                                       fg="White",
                                       activebackground="Red",
                                       activeforeground="White",
                                       borderwidth=0,
                                       height=0, width=3,
                                       padx=0, pady=0,
-                                      command=partial(self.close_leaderboard, partner))
+                                      command=partial(
+                                          self.close_leaderboard, partner))
         self.close_button.grid(row=0, column=1)
 
         self.leaderboard_text = tk.Text(self.leaderboard_content_frame,
                                         font="Arial 12 bold",
                                         bg=default_bg,
                                         fg=button_fg,
-                                        height=26, width=41,
+                                        height=22, width=41,
                                         padx=7, pady=12)
         self.leaderboard_text.grid(row=0, column=0)
-
+        # Tags allow colouring of text
         self.leaderboard_text.tag_configure(
             "Title", background=button_bg, foreground=button_fg, underline=1)
-
+        # binds mouse 1 to move the window around
         self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)
-
+        # changes the colour of the close button if mouse hovers over
         self.close_button.bind("<Enter>", self.close_on_enter)
         self.close_button.bind("<Leave>", self.close_on_leave)
         self.draw_leaderboard(partner)
 
-    # These defnintions change the colour of the minimise and close button when the mouse hovers over them
+    # These defnintions change the colour of the minimise and close button when
+    # the mouse hovers over them
     def close_on_enter(self, partner):
         self.close_button['background'] = 'red'
         self.close_button['foreground'] = 'white'
 
     def close_on_leave(self, partner):
-        self.close_button['background'] = 'grey3'
+        self.close_button['background'] = 'grey5'
         self.close_button['foreground'] = 'white'
 
     #  Close help menue
@@ -991,6 +1069,8 @@ class Leaderboard:
         # Put help button back to normal
         partner.leaderboard_button.config(state=tk.NORMAL)
         self.leaderboardtoplevel.destroy()
+    # This defnition shows the leaderboard on screan after reading the values
+    # from a file
 
     def draw_leaderboard(self, partner):
         self.leaderboard_text.configure(state="normal")
@@ -1001,7 +1081,8 @@ class Leaderboard:
                 '\n').rsplit(',', 1)[1] for i in file}
             file.close()
             sortedhighscore_dict = {n: s for n, s in sorted(
-                highscore_dict.items(), key=lambda item: int(item[1]), reverse=True)}
+                highscore_dict.items(), key=lambda item: int(
+                    item[1]), reverse=True)}
             self.leaderboard_text.insert(
                 'end', 'Name\t\t\t\tScore\n', 'Title')
             self.leaderboard_text.insert('end', '\n')
@@ -1011,34 +1092,41 @@ class Leaderboard:
             self.leaderboard_text.configure(state="disabled")
         except:
             self.leaderboard_text.insert('end', 'ERROR\nFile failed to load')
+    # allows the leaderboard window to be moved around
 
     def Main_pos(self, partner):
         helproot = self.leaderboardtoplevel
         windowx, windowy = helproot.winfo_rootx(), helproot.winfo_rooty()
-        pointerx, pointery = helproot.winfo_pointerx(), helproot.winfo_pointery()
+        pointerx, pointery = helproot.winfo_pointerx(
+        ), helproot.winfo_pointery()
         newx, newy = (pointerx - windowx), (pointery - windowy)
 
         def move_window(self):
-            newpointx, newpointy = helproot.winfo_pointerx(), helproot.winfo_pointery()
-            helproot.geometry('{}x{}+{}+{}'.format(384, 459, newpointx - newx,
-                                                   newpointy - newy))
+            _newpointx, _newpointy = helproot.winfo_pointerx(
+            ), helproot.winfo_pointery()
+            helproot.geometry('{}x{}+{}+{}'.format(384, 459, _newpointx - newx,
+                                                   _newpointy - newy))
         self.title_bar_drag_button.bind('<B1-Motion>', move_window)
 
 
-class Withdraw:
+class Withdraw:  # Withdraw class allows user to save their highscore (coins)
+    global coins
+
     def __init__(self, partner):
         default_bg = 'grey20'
         button_bg = 'grey10'
         button_fg = 'grey90'
-        font = 'Bahnschrift Light SemiCondensed'
+        font = 'Arial'
         confirm = False
         self.withdrawtoplevel = tk.Toplevel()
         self.withdrawtoplevel.overrideredirect(True)
         self.withdrawtoplevel.attributes('-alpha', 0.99)
         self.withdrawtoplevel.attributes("-topmost", 1)
-        _wwidth_, _wheight_ = 269, 239
-        self.withdrawtoplevel.geometry('{}x{}+{}+{}'.format(_wwidth_, _wheight_, int(screen_width / 2 - _wwidth_ / 2),
-                                                            int(screen_height / 2 - _wheight_ / 2)))
+        __wwidth, __wheight = 269, 239
+        self.withdrawtoplevel.geometry(
+            '{}x{}+{}+{}'.format(__wwidth, __wheight, int(
+                screen_width / 2 - __wwidth / 2), int(
+                    screen_height / 2 - __wheight / 2)))
         self.withdrawtoplevel.attributes('-alpha', 0.99)
 
         partner.withdraw_button.config(state=tk.DISABLED)
@@ -1056,7 +1144,7 @@ class Withdraw:
 
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.9 Withdraw',
+                                               text='Hi-Low V1.0 Withdraw',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -1065,8 +1153,8 @@ class Withdraw:
                                                activebackground="grey5",
                                                activeforeground="white",
                                                borderwidth=0,
-                                               height=0, width=40,
-                                               padx=0, pady=0)
+                                               height=0, width=34,
+                                               padx=2, pady=0)
         self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
 
         # Close button
@@ -1074,35 +1162,40 @@ class Withdraw:
                                       text="X",
                                       font=(font, '9', 'bold'),
                                       justify=tk.LEFT,
-                                      bg="grey3",
+                                      bg="grey5",
                                       fg="White",
                                       activebackground="Red",
                                       activeforeground="White",
                                       borderwidth=0,
                                       height=0, width=3,
                                       padx=0, pady=0,
-                                      command=partial(self.close_withdraw, partner))
+                                      command=partial(
+                                          self.close_withdraw, partner))
         self.close_button.grid(row=0, column=1)
-
+        # shos withdraw information
         self.withdraw_label = tk.Label(self.withdraw_content_frame,
-                                       text='Are you sure you want to withdraw? You will stop the game here and your current coins ammount will be recorded on the leaderboard with your name. Enter your name below',
+                                       text='Are you sure you want to withdraw'
+                                       '? You will stop the game here and your'
+                                       ' current coins ammount will be recorde'
+                                       'd on the leaderboard with your name. E'
+                                       'nter your name below',
                                        font=(font, '12'),
                                        justify=tk.LEFT,
                                        bg=default_bg,
                                        fg=button_fg,
                                        wrap=250,
-                                       padx=11, pady=10)
+                                       padx=12, pady=11)
         self.withdraw_label.grid(row=0, column=0)
-
+        # user enters their username here
         self.withdraw_entry_box = tk.Entry(self.withdraw_content_frame,
                                            font=(font, '14'),
                                            justify=tk.CENTER,
                                            bg="grey40",
                                            fg="grey90",
                                            borderwidth=0,
-                                           width=25)
+                                           width=22)
         self.withdraw_entry_box.grid(row=1, padx=0, pady=0)
-
+        # Tells user information about their name e.g too long
         self.withdraw_error_label = tk.Label(self.withdraw_content_frame,
                                              text='',
                                              font=(font, '12', 'italic'),
@@ -1110,7 +1203,7 @@ class Withdraw:
                                              bg=default_bg,
                                              fg=button_fg)
         self.withdraw_error_label.grid(row=2, column=0)
-
+        # button that withdraws and confirms withdrawing
         self.withdraw_button = tk.Button(self.withdraw_content_frame,
                                          bg=button_bg,
                                          fg=button_fg,
@@ -1118,22 +1211,25 @@ class Withdraw:
                                          font=(font, '18', "bold"),
                                          borderwidth=0,
                                          padx=0, pady=0,
-                                         width=20,
-                                         command=lambda: self.withdraw_confirm(self))
-        self.withdraw_button.grid(row=3, column=0, pady=3)
+                                         width=16,
+                                         command=lambda: self.withdraw_confirm(
+                                             self))
+        self.withdraw_button.grid(row=3, column=0, pady=5)
 
+        # binds mouse 1 to move the window around
         self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)
-
+        # changes the colour of the close button if mouse hovers over
         self.close_button.bind("<Enter>", self.close_on_enter)
         self.close_button.bind("<Leave>", self.close_on_leave)
 
-    # These defnintions change the colour of the minimise and close button when the mouse hovers over them
+    # These defnintions change the colour of the minimise and close button when
+    # the mouse hovers over them
     def close_on_enter(self, partner):
         self.close_button['background'] = 'red'
         self.close_button['foreground'] = 'white'
 
     def close_on_leave(self, partner):
-        self.close_button['background'] = 'grey3'
+        self.close_button['background'] = 'grey5'
         self.close_button['foreground'] = 'white'
 
     #  Close help menue
@@ -1142,60 +1238,78 @@ class Withdraw:
         partner.withdraw_button.config(state=tk.NORMAL)
         self.withdrawtoplevel.destroy()
 
-    def withdraw_confirm(self, partner):
+    def withdraw_confirm(self, partner):  # This definition withdraws the
+        # amount and writes the username and score to the leaderboard file.
+        # it also prompts the user to confirm their action
         global coins
         playername = self.withdraw_entry_box.get()
         button_text = self.withdraw_button.cget('text')
-        if button_text == 'Confirm':
+        if coins < 100:
+            self.close_withdraw(partner)
+        elif button_text == 'Confirm':  # if user confirms append to file
             file = open('Leaderboard.csv', 'r')
             row_count = sum(1 for row in file)
             file.close()
             file = open('Leaderboard.csv', 'a')
             file.write('\n%s|%s,%s' % (row_count, playername, coins))
             file.close()
-        else:
+            coins = 0
+            call_endgame = Endgame(self)
+            self.withdrawtoplevel.destroy()
+        else:  # checks if name is correct if not, it tells the user
             if playername == '':
                 self.withdraw_error_label.configure(
                     text='Enter your name above')
             elif len(playername) > 16:
                 self.withdraw_error_label.configure(
-                    text='Name is too long')
+                    text='Name is too long (16 chars max)')
             else:
                 self.withdraw_label.configure(
-                    text='Are you sure you want to withdraw %s coins under the name %s?' % (coins, playername), font=('14'), height=5, width=27, pady=16)
+                    text='Are you sure you want to withdraw %s coins under the'
+                    ' name "%s"?' % (coins, playername), font=('14'), height=5,
+                    width=26, padx=16, pady=14)
                 self.withdraw_entry_box.configure(
-                    font='1', disabledbackground='grey20', disabledforeground='grey20')
+                    font='1', disabledbackground='grey20',
+                    disabledforeground='grey20')
                 self.withdraw_entry_box['state'] = tk.DISABLED
                 self.withdraw_error_label.configure(
                     text='This action cannot be undone', font=('Bold'))
                 self.withdraw_button.configure(text='Confirm')
+    # allows the withdraw definition to be moved around
 
     def Main_pos(self, partner):
         withdrawroot = self.withdrawtoplevel
-        windowx, windowy = withdrawroot.winfo_rootx(), withdrawroot.winfo_rooty()
-        pointerx, pointery = withdrawroot.winfo_pointerx(), withdrawroot.winfo_pointery()
+        windowx, windowy = withdrawroot.winfo_rootx(
+        ), withdrawroot.winfo_rooty()
+        pointerx, pointery = withdrawroot.winfo_pointerx(
+        ), withdrawroot.winfo_pointery()
         newx, newy = (pointerx - windowx), (pointery - windowy)
 
         def move_window(self):
-            newpointx, newpointy = withdrawroot.winfo_pointerx(), withdrawroot.winfo_pointery()
-            withdrawroot.geometry('{}x{}+{}+{}'.format(269, 239, newpointx - newx,
-                                                       newpointy - newy))
+            _newpointx, _newpointy = withdrawroot.winfo_pointerx(
+            ), withdrawroot.winfo_pointery()
+            withdrawroot.geometry('{}x{}+{}+{}'.format(
+                269, 239, _newpointx - newx, _newpointy - newy))
         self.title_bar_drag_button.bind('<B1-Motion>', move_window)
 
 
-class History:
+class History:  # This defiinition shows the user the game hisotry such as
+    #  drawn cards and their profit and loss
+    global firstcard
+
     def __init__(self, partner):
         default_bg = 'grey20'
         button_bg = 'grey10'
         button_fg = 'grey90'
-        font = 'Bahnschrift Light SemiCondensed'
+        font = 'Arial'
         self.historytoplevel = tk.Toplevel()
         self.historytoplevel.overrideredirect(True)
         self.historytoplevel.attributes('-alpha', 0.99)
         self.historytoplevel.attributes("-topmost", 1)
-        _hwidth_, _hheight_ = 471, 459
-        self.historytoplevel.geometry('{}x{}+{}+{}'.format(_hwidth_, _hheight_, int(screen_width / 2 - _hwidth_ / 2),
-                                                           int(screen_height / 2 - _hheight_ / 2)))
+        __wwidth, __wheight = 471, 459
+        self.historytoplevel.geometry('{}x{}+{}+{}'.format(
+            __wwidth, __wheight, int(screen_width / 2 - __wwidth / 2), int(
+                screen_height / 2 - __wheight / 2)))
         self.historytoplevel.attributes('-alpha', 0.99)
 
         partner.history_button.config(state=tk.DISABLED)
@@ -1213,7 +1327,7 @@ class History:
 
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.9 History',
+                                               text='Hi-Low V1.0 History',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -1222,8 +1336,8 @@ class History:
                                                activebackground="grey5",
                                                activeforeground="white",
                                                borderwidth=0,
-                                               height=0, width=74,
-                                               padx=0, pady=0)
+                                               height=0, width=63,
+                                               padx=1, pady=0)
         self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
 
         # Close button
@@ -1231,17 +1345,17 @@ class History:
                                       text="X",
                                       font=(font, '9', 'bold'),
                                       justify=tk.LEFT,
-                                      bg="grey3",
+                                      bg="grey5",
                                       fg="White",
                                       activebackground="Red",
                                       activeforeground="White",
                                       borderwidth=0,
                                       height=0, width=3,
                                       padx=0, pady=0,
-                                      command=partial(self.close_history, partner))
+                                      command=partial(
+                                          self.close_history, partner))
         self.close_button.grid(row=0, column=1, sticky=tk.W)
-        self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)
-
+        # All the history is shown in this text box
         self.history_text = tk.Text(self.history_content_frame,
                                     font="Arial 10 bold",
                                     bg=default_bg,
@@ -1249,49 +1363,73 @@ class History:
                                     height=26, width=65,
                                     padx=8, pady=12)
         self.history_text.grid(row=0, column=0)
+        # tags allow colouring of the text such as showing green or red for
+        # profit/loss
+        self.history_text.tag_configure(
+            "Red", background="#8E0000", foreground=button_fg, font=(
+                font, '14', 'bold'))
+        self.history_text.tag_configure(
+            "Black", background="#191919", foreground=button_fg, font=(
+                font, '14', 'bold'))
+        self.history_text.tag_configure(
+            "Green", background="#008E00", foreground=button_fg, font=(
+                font, '14', 'bold'))
+        self.history_text.tag_configure(
+            "Joker", background="#4E088C", foreground=button_fg, font=(
+                font, '14', 'bold'))
+        self.history_text.tag_configure(
+            "Gain", background=default_bg, foreground='Green', font=(
+                font, '10'))
+        self.history_text.tag_configure(
+            "Loss", background=default_bg, foreground='Red', font=(font, '10'))
+        self.history_text.tag_configure(
+            "extra", foreground='grey50', font=(font, '10'))
 
-        self.history_text.tag_configure(
-            "Red", background="#8E0000", foreground=button_fg, font=(font, '14', 'bold'))
-        self.history_text.tag_configure(
-            "Black", background="#191919", foreground=button_fg, font=(font, '14', 'bold'))
-        self.history_text.tag_configure(
-            "Green", background="#008E00", foreground=button_fg, font=(font, '14', 'bold'))
-        self.history_text.tag_configure(
-            "Joker", background="#4E088C", foreground=button_fg, font=(font, '14', 'bold'))
-        self.history_text.tag_configure(
-            "Gain", background=default_bg, foreground='Green', font=(font, '11'))
-        self.history_text.tag_configure(
-            "Loss", background=default_bg, foreground='Red', font=(font, '11'))
-        self.history_text.tag_configure(
-            "extra", foreground='grey50', font=(font, '11'))
-
+        # binds mouse 1 to move the window around
+        self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)
+        # changes the colour of the close button if mouse hovers over
         self.close_button.bind("<Enter>", self.close_on_enter)
         self.close_button.bind("<Leave>", self.close_on_leave)
-        self.update_history(partner)
+        self.update_history()
 
-    # These defnintions change the colour of the minimise and close button when the mouse hovers over them
+    # These defnintions change the colour of the minimise and close button when
+    # the mouse hovers over them
     def close_on_enter(self, partner):
         self.close_button['background'] = 'red'
         self.close_button['foreground'] = 'white'
 
     def close_on_leave(self, partner):
-        self.close_button['background'] = 'grey3'
+        self.close_button['background'] = 'grey5'
         self.close_button['foreground'] = 'white'
 
     #  Close help menue
     def close_history(self, partner):
+        global historyopen
+        historyopen = False
         # Put help button back to normal
         partner.history_button.config(state=tk.NORMAL)
         self.historytoplevel.destroy()
 
-    def update_history(self, partner):
+    def update_history(self):  # this definition takes the information
+        # from the history list and shows it on the screen in a readable way
+        global firstcard
+        global historyopen
+        historyopen = True
         previous_amount = 10000
         self.history_text.configure(state="normal")
         self.history_text.delete('1.0', tk.END)
+        if firstcard == 'Joker!':
+            self.history_text.insert('end', '[Joker]', 'Joker')
+        else:
+            fc, fs = firstcard.split(' ')
+            self.history_text.insert('end', '[%s %s]' % (fc, fs), fs)
+        self.history_text.insert('end', '\nStarting card. Starting with 10000'
+                                 ' coins\n', 'extra')
         if len(history_list) > 0:
             for items in history_list:
                 history_listbreak = items.split('|')
-                card, suite, amount = history_listbreak[0], history_listbreak[1], history_listbreak[2]
+                card, suite = history_listbreak[0], history_listbreak[1]
+                amount = history_listbreak[2]
                 gainloss = int(amount) - int(previous_amount)
                 previous_amount = amount
                 if history_listbreak[3] == '0':
@@ -1314,39 +1452,47 @@ class History:
                     self.history_text.insert('end', ' Loss:', 'extra')
                     self.history_text.insert(
                         'end', ' %s' % (gainloss), 'Loss')
-                self.history_text.insert('end', '\nBet on: %s, Multiplier: x%s, Bet amount: %s, Total: %s coins\n' % (
-                    btn, multiplier, bet, amount), 'extra')
+                self.history_text.insert(
+                    'end', '\nBet on: %s, Multiplier: x%s, Bet amount: %s,'
+                    ' Total: %s coins\n' % (btn, multiplier, bet, amount),
+                    'extra')
         self.history_text.see("end")
         self.history_text.configure(state="disabled")
+        # allows the history menu to be moved around
 
     def Main_pos(self, partner):
         historyroot = self.historytoplevel
         windowx, windowy = historyroot.winfo_rootx(), historyroot.winfo_rooty()
-        pointerx, pointery = historyroot.winfo_pointerx(), historyroot.winfo_pointery()
+        pointerx, pointery = historyroot.winfo_pointerx(
+        ), historyroot.winfo_pointery()
         newx, newy = (pointerx - windowx), (pointery - windowy)
 
         def move_window(self):
-            newpointx, newpointy = historyroot.winfo_pointerx(), historyroot.winfo_pointery()
-            historyroot.geometry('{}x{}+{}+{}'.format(471, 459, newpointx - newx,
-                                                      newpointy - newy))
+            _newpointx, _newpointy = historyroot.winfo_pointerx(
+            ), historyroot.winfo_pointery()
+            historyroot.geometry('{}x{}+{}+{}'.format(
+                471, 459, _newpointx - newx, _newpointy - newy))
         self.title_bar_drag_button.bind('<B1-Motion>', move_window)
 
 
-class Popup:
+class Popup:  # This prompts the user with a warning and asks them if they
+    # want to continue
     global randomfg
 
     def __init__(self, partner):
         default_bg = 'grey20'
         button_bg = 'grey10'
         button_fg = 'grey90'
-        font = 'Bahnschrift Light SemiCondensed'
+        font = 'Arial'
         self.popuptoplevel = tk.Toplevel()
         self.popuptoplevel.overrideredirect(True)
         self.popuptoplevel.attributes('-alpha', 0.99)
         self.popuptoplevel.attributes("-topmost", 1)
-        _hwidth_, _hheight_ = 500, 200
-        self.popuptoplevel.geometry('{}x{}+{}+{}'.format(_hwidth_, _hheight_, int(screen_width / 2 - _hwidth_ / 2),
-                                                         int(screen_height / 2 - _hheight_ / 2)))
+        __wwidth, __wheight = 509, 178
+        self.popuptoplevel.geometry(
+            '{}x{}+{}+{}'.format(__wwidth, __wheight, int(
+                screen_width / 2 - __wwidth / 2), int(
+                    screen_height / 2 - __wheight / 2)))
         self.popuptoplevel.attributes('-alpha', 0.99)
 
         partner.buttons_off(self, True)
@@ -1355,11 +1501,16 @@ class Popup:
         self.title_bar_frame = tk.Frame(self.popuptoplevel,
                                         bg=default_bg,
                                         padx=0, pady=0)
-        self.title_bar_frame.grid()
+        self.title_bar_frame.grid(row=0, column=0)
+
+        self.popup_content_frame = tk.Frame(self.popuptoplevel,
+                                            bg=default_bg,
+                                            padx=0, pady=0)
+        self.popup_content_frame.grid(row=1, column=0)
 
         # Title bar drag button
         self.title_bar_drag_button = tk.Button(self.title_bar_frame,
-                                               text='Hi-Low game version 0.9 Popup',
+                                               text='Hi-Low V1.0 Disclaimer',
                                                font=(font, '9'),
                                                bg="grey5",
                                                fg="white",
@@ -1368,28 +1519,56 @@ class Popup:
                                                activebackground="grey5",
                                                activeforeground="white",
                                                borderwidth=0,
-                                               height=0, width=83,
-                                               padx=0, pady=0)
+                                               height=0, width=72,
+                                               padx=1, pady=0)
         self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
-
-        self.accept_button = tk.Button(self.popuptoplevel,
-                                       text='Accept',
+        # The text shown on the popup
+        self.withdraw_label = tk.Label(self.popup_content_frame,
+                                       text='WARNING: Gambling can be addictiv'
+                                       'e, if you have gambling problems stop '
+                                       'imediatly and call (NZ)0800 654 655 or'
+                                       ' visit www.gamblinghelpline.co.nz. Rec'
+                                       'omended for MATURE AUDIENCE. The crea'
+                                       'tor of this program will NOT be held l'
+                                       'iable for any damages caused due to ad'
+                                       'diction or other misuse of this progra'
+                                       'm. Press accept to continue playing',
+                                       font=(font, '11'),
+                                       justify=tk.LEFT,
                                        bg=default_bg,
                                        fg=button_fg,
-                                       padx=0, pady=0,
-                                       command=lambda: self.close_popup(partner, True))
-        self.accept_button.grid(row=1, column=0)
-
-        self.reject_button = tk.Button(self.popuptoplevel,
+                                       wrap=490,
+                                       padx=10, pady=10)
+        self.withdraw_label.grid(row=0, column=0)
+        # popup button frame holding the accept and reject button
+        self.popup_button_frame = tk.Frame(self.popup_content_frame,
+                                           bg=default_bg,
+                                           padx=0, pady=8)
+        self.popup_button_frame.grid(row=1, column=0)
+        # reject button
+        self.reject_button = tk.Button(self.popup_button_frame,
                                        text='Reject',
-                                       bg=default_bg,
+                                       font=(font, '14', "bold"),
+                                       bg=button_bg,
                                        fg=button_fg,
-                                       padx=0, pady=0,
-                                       command=lambda: self.close_popup(partner, False))
-        self.reject_button.grid(row=2, column=0)
-
+                                       borderwidth=0,
+                                       command=lambda: self.close_popup(
+                                           partner, False))
+        self.reject_button.grid(row=0, column=0, padx=2, pady=2)
+        # accept button
+        self.accept_button = tk.Button(self.popup_button_frame,
+                                       text='Accept',
+                                       font=(font, '14', "bold"),
+                                       bg=button_bg,
+                                       fg=button_fg,
+                                       borderwidth=0,
+                                       command=lambda: self.close_popup(
+                                           partner, True))
+        self.accept_button.grid(row=0, column=1, padx=2, pady=2)
+        # binds mouse 1 to move the window around
         self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)
-    #  Close help menue
+        # changes the colour of the close button if mouse hovers over
+    #  Close help menu
 
     def close_popup(self, partner, allow):
         if allow is True:
@@ -1404,29 +1583,166 @@ class Popup:
             self.popuptoplevel.destroy()
         elif allow is False:
             root.destroy()
+    # Allows the popup to be moved around
 
     def Main_pos(self, partner):
         popuproot = self.popuptoplevel
         windowx, windowy = popuproot.winfo_rootx(), popuproot.winfo_rooty()
-        pointerx, pointery = popuproot.winfo_pointerx(), popuproot.winfo_pointery()
+        pointerx, pointery = popuproot.winfo_pointerx(
+        ), popuproot.winfo_pointery()
         newx, newy = (pointerx - windowx), (pointery - windowy)
 
         def move_window(self):
-            newpointx, newpointy = popuproot.winfo_pointerx(), popuproot.winfo_pointery()
-            popuproot.geometry('{}x{}+{}+{}'.format(500, 200, newpointx - newx,
-                                                    newpointy - newy))
+            _newpointx, _newpointy = popuproot.winfo_pointerx(
+            ), popuproot.winfo_pointery()
+            popuproot.geometry('{}x{}+{}+{}'.format(
+                509, 178, _newpointx - newx, _newpointy - newy))
         self.title_bar_drag_button.bind('<B1-Motion>', move_window)
 
 
-if __name__ == "__main__":
+class Endgame:  # This is diplayed when the game ends and the user cannot bet
+    # anymore
+    def __init__(self, partner):
+        default_bg = 'grey20'
+        button_bg = 'grey10'
+        button_fg = 'grey90'
+        font = 'Arial'
+        self.endgametoplevel = tk.Toplevel()
+        self.endgametoplevel.overrideredirect(True)
+        self.endgametoplevel.attributes('-alpha', 0.99)
+        self.endgametoplevel.attributes("-topmost", 1)
+        __wwidth, __wheight = 400, 200
+        self.endgametoplevel.geometry(
+            '{}x{}+{}+{}'.format(__wwidth, __wheight, int(
+                screen_width / 2 - __wwidth / 2), int(
+                    screen_height / 2 - __wheight / 2)))
+        self.endgametoplevel.attributes('-alpha', 0.99)
+
+        # Title bar frame
+        self.title_bar_frame = tk.Frame(self.endgametoplevel,
+                                        bg=default_bg,
+                                        padx=0, pady=0)
+        self.title_bar_frame.grid(row=0, column=0)
+
+        self.endgame_content_frame = tk.Frame(self.endgametoplevel,
+                                              bg=default_bg,
+                                              padx=40, pady=20)
+        self.endgame_content_frame.grid(row=1, column=0, )
+
+        # Title bar drag button
+        self.title_bar_drag_button = tk.Button(self.title_bar_frame,
+                                               text='Hi-Low V1.0 Game Over!',
+                                               font=(font, '9'),
+                                               bg="grey5",
+                                               fg="white",
+                                               anchor=tk.W,
+                                               relief=tk.SUNKEN,
+                                               activebackground="grey5",
+                                               activeforeground="white",
+                                               borderwidth=0,
+                                               height=0, width=56,
+                                               padx=2, pady=0)
+        self.title_bar_drag_button.grid(row=0, column=0, sticky=tk.W)
+        # shows game over text
+        self.endgame_label = tk.Label(self.endgame_content_frame,
+                                      text='Game Over!',
+                                      font=(font, '20'),
+                                      justify=tk.CENTER,
+                                      bg=default_bg,
+                                      fg=button_fg,
+                                      width=19,
+                                      padx=6, pady=10)
+        self.endgame_label.grid(row=0, column=0)
+        # shows game over text
+        self.endgame_label = tk.Label(self.endgame_content_frame,
+                                      text='Press exit to exit the program',
+                                      font=(font, '12'),
+                                      justify=tk.CENTER,
+                                      bg=default_bg,
+                                      fg=button_fg,
+                                      padx=12, pady=10)
+        self.endgame_label.grid(row=1, column=0)
+        # exit button which closes the program
+        self.exit_button = tk.Button(self.endgame_content_frame,
+                                     bg=button_bg,
+                                     fg=button_fg,
+                                     text='Exit',
+                                     font=(font, '18', "bold"),
+                                     borderwidth=0,
+                                     padx=0, pady=0,
+                                     width=20,
+                                     command=partial(
+                                          self.close_endgame, partner))
+        self.exit_button.grid(row=2, column=0, pady=3)
+
+        # binds mouse 1 to move the window around
+        self.title_bar_drag_button.bind('<Button-1>', self.Main_pos)
+        # changes the colour of the close button if mouse hovers over
+        # disables withdrawing as the game has ended
+        partner.withdraw_button.config(state=tk.DISABLED)
+
+    #  Close program
+    def close_endgame(self, partner):
+        exit()
+    # allows the user to move around the endgame menu
+
+    def Main_pos(self, partner):
+        endgameroot = self.endgametoplevel
+        windowx, windowy = endgameroot.winfo_rootx(), endgameroot.winfo_rooty()
+        pointerx, pointery = endgameroot.winfo_pointerx(
+        ), endgameroot.winfo_pointery()
+        newx, newy = (pointerx - windowx), (pointery - windowy)
+
+        def move_window(self):
+            _newpointx, _newpointy = endgameroot.winfo_pointerx(
+            ), endgameroot.winfo_pointery()
+            endgameroot.geometry(
+                '{}x{}+{}+{}'.format(
+                    400, 200, _newpointx - newx, _newpointy - newy))
+        self.title_bar_drag_button.bind('<B1-Motion>', move_window)
+
+
+class Icon:  # adds an icon into the taskbar so if the window is not focusd on
+    # it can be accessed easily
+    def __init__(self, partner):
+        self.icon = tk.Toplevel()
+        root.title('Hi-Low V1.0')
+        self.icon.geometry('1x1+-100+-100')
+        self.icon.attributes('-alpha', 0)
+        # Adds custom icon
+        self.icon.iconbitmap(default='Images\\back_icon.ico')
+        root.iconbitmap(default='Images\\back_icon.ico')
+        self.minimise()
+        self.icon.bind("<Map>", self.mapped)
+        self.icon.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def on_closing(self):
+        exit()
+
+    def minimise(self):
+        root.update_idletasks()
+        self.icon.update_idletasks()
+        self.icon.state('iconic')
+
+    def mapped(self, parent):
+        self.icon.update_idletasks()
+        root.state('normal')
+        root.attributes('-topmost', True)
+        root.attributes('-topmost', False)
+        self.minimise()
+
+
+if __name__ == "__main__":  # First thing that runs that makes the main app
+    # window
     root = tk.Tk()
-    root.title('main')
-    root.overrideredirect(True)  # turns off title bar, geometry
-    screen_width, screen_height = root.winfo_screenwidth(), root.winfo_screenheight()
+    root.title('Hi-Low')
+    # turns off title bar so custom one can be made
+    root.overrideredirect(True)
+    screen_width, screen_height = root.winfo_screenwidth(
+    ), root.winfo_screenheight()
     wwidth, wheight = 900, 459
-    root.geometry('{}x{}+{}+{}'.format(wwidth, wheight, int(screen_width /
-                                                            2 - wwidth / 2), int(screen_height / 2 - wheight / 2)))
+    root.geometry('{}x{}+{}+{}'.format(wwidth, wheight, int(
+        screen_width / 2 - wwidth / 2), int(screen_height / 2 - wheight / 2)))
     root.attributes('-alpha', 0.99)
     App = MainApp(root)
     root.mainloop()
-
